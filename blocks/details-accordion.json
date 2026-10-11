@@ -1,0 +1,156 @@
+{
+  "$schema": "../schema/block.schema.json",
+  "format": 1,
+  "id": "details-accordion",
+  "kind": "accordion",
+  "label": "Details",
+  "hint": "A product's details in one card: description, sizes, delivery and returns, each opening on its own",
+  "category": "content",
+  "isNew": true,
+  "settings": {
+    "single": false,
+    "start": 0
+  },
+  "root": {
+    "type": "stack",
+    "name": "Details",
+    "w": 640,
+    "h": 520,
+    "layout": {
+      "direction": "column",
+      "gap": 0,
+      "pad": [
+        0,
+        20,
+        0,
+        20
+      ],
+      "align": "stretch"
+    },
+    "sizeW": "fixed",
+    "sizeH": "fit",
+    "children": [
+      {
+        "type": "stack",
+        "name": "Item {n}",
+        "part": "item",
+        "w": 640,
+        "h": 124,
+        "repeat": 4,
+        "layout": {
+          "direction": "column",
+          "gap": 0,
+          "pad": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "sizeW": "fill",
+        "sizeH": "fit",
+        "clip": true,
+        "children": [
+          {
+            "type": "stack",
+            "name": "Header",
+            "part": "header",
+            "w": 640,
+            "h": 60,
+            "layout": {
+              "direction": "row",
+              "gap": 16,
+              "pad": [
+                16,
+                0,
+                16,
+                0
+              ],
+              "align": "center",
+              "justify": "space-between"
+            },
+            "sizeW": "fill",
+            "sizeH": "fit",
+            "children": [
+              {
+                "type": "text",
+                "name": "Question",
+                "w": 540,
+                "h": 24,
+                "sizeW": "fill",
+                "text": "Section {n}",
+                "ink": "ink",
+                "typography": {
+                  "role": "heading",
+                  "size": 17,
+                  "weight": 600
+                }
+              },
+              {
+                "type": "text",
+                "name": "Icon",
+                "part": "icon",
+                "w": 24,
+                "h": 28,
+                "text": "+",
+                "ink": "ink",
+                "typography": {
+                  "role": "body",
+                  "size": 28,
+                  "weight": 300,
+                  "align": "center"
+                }
+              }
+            ]
+          },
+          {
+            "type": "stack",
+            "name": "Panel",
+            "part": "panel",
+            "w": 640,
+            "h": 64,
+            "layout": {
+              "direction": "column",
+              "gap": 0,
+              "pad": [
+                0,
+                0,
+                20,
+                0
+              ]
+            },
+            "sizeW": "fill",
+            "sizeH": "fit",
+            "children": [
+              {
+                "type": "text",
+                "name": "Answer",
+                "w": 600,
+                "h": 44,
+                "sizeW": "fill",
+                "text": "What a buyer should know about section {n}.",
+                "ink": "ink",
+                "typography": {
+                  "role": "body",
+                  "size": 15,
+                  "weight": 400
+                }
+              }
+            ]
+          },
+          {
+            "type": "frame",
+            "name": "Divider",
+            "w": 640,
+            "h": 1,
+            "sizeW": "fill",
+            "sizeH": "fixed",
+            "fill": "on-picture"
+          }
+        ]
+      }
+    ],
+    "fill": "surface",
+    "radius": "design"
+  }
+}

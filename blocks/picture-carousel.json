@@ -1,0 +1,245 @@
+{
+  "$schema": "../schema/block.schema.json",
+  "format": 1,
+  "id": "picture-carousel",
+  "kind": "carousel",
+  "label": "Picture carousel",
+  "hint": "Pictures that slide with a sense of depth as they move, each with its caption. Add your own pictures from its settings",
+  "category": "content",
+  "isNew": true,
+  "settings": {
+    "perView": 1,
+    "loop": true,
+    "autoplay": false,
+    "interval": 5,
+    "arrows": true,
+    "dots": true,
+    "swipe": true,
+    "start": 0,
+    "parallax": 0.12
+  },
+  "root": {
+    "type": "stack",
+    "name": "Carousel",
+    "w": 640,
+    "h": 384,
+    "layout": {
+      "direction": "column",
+      "gap": 16,
+      "pad": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "align": "center"
+    },
+    "sizeW": "fixed",
+    "sizeH": "fit",
+    "children": [
+      {
+        "type": "stack",
+        "name": "View",
+        "w": 640,
+        "h": 360,
+        "layout": {
+          "direction": "row",
+          "gap": 0,
+          "pad": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "align": "stretch"
+        },
+        "sizeW": "fill",
+        "sizeH": "fixed",
+        "clip": true,
+        "radius": "design",
+        "children": [
+          {
+            "type": "stack",
+            "name": "Slides",
+            "part": "track",
+            "w": 1920,
+            "h": 360,
+            "layout": {
+              "direction": "row",
+              "gap": 0,
+              "pad": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "align": "stretch"
+            },
+            "sizeW": "fit",
+            "sizeH": "fill",
+            "children": [
+              {
+                "type": "stack",
+                "name": "Slide {n}",
+                "w": 640,
+                "h": 360,
+                "repeat": 3,
+                "layout": {
+                  "direction": "column",
+                  "gap": 4,
+                  "pad": [
+                    32,
+                    88,
+                    32,
+                    88
+                  ],
+                  "align": "start",
+                  "justify": "end"
+                },
+                "sizeW": "fixed",
+                "sizeH": "fill",
+                "clip": true,
+                "fill": "ink",
+                "children": [
+                  {
+                    "type": "image",
+                    "name": "Picture",
+                    "part": "picture",
+                    "w": 640,
+                    "h": 360,
+                    "float": {
+                      "cover": true
+                    },
+                    "shade": 0.28
+                  },
+                  {
+                    "type": "text",
+                    "name": "Title",
+                    "w": 464,
+                    "h": 32,
+                    "sizeW": "fill",
+                    "text": "Picture {n}",
+                    "ink": "on-picture",
+                    "typography": {
+                      "role": "heading",
+                      "size": 28,
+                      "weight": 600
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "name": "Caption",
+                    "w": 464,
+                    "h": 22,
+                    "sizeW": "fill",
+                    "text": "A line about this picture.",
+                    "ink": "on-picture",
+                    "typography": {
+                      "role": "body",
+                      "size": 15,
+                      "weight": 400
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "button",
+            "name": "Previous",
+            "part": "prev",
+            "w": 44,
+            "h": 44,
+            "float": {
+              "left": 16,
+              "centreY": true
+            },
+            "fill": "on-picture",
+            "ink": "ink",
+            "radius": 22,
+            "text": "←",
+            "typography": {
+              "role": "body",
+              "size": 17,
+              "weight": 600,
+              "align": "center"
+            }
+          },
+          {
+            "type": "button",
+            "name": "Next",
+            "part": "next",
+            "w": 44,
+            "h": 44,
+            "float": {
+              "right": 16,
+              "centreY": true
+            },
+            "fill": "on-picture",
+            "ink": "ink",
+            "radius": 22,
+            "text": "→",
+            "typography": {
+              "role": "body",
+              "size": 17,
+              "weight": 600,
+              "align": "center"
+            }
+          },
+          {
+            "type": "button",
+            "name": "Pause",
+            "part": "pause",
+            "w": 76,
+            "h": 32,
+            "float": {
+              "right": 16,
+              "top": 16
+            },
+            "fill": "on-picture",
+            "ink": "ink",
+            "radius": 16,
+            "text": "Pause",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 600,
+              "align": "center"
+            },
+            "hidden": true
+          }
+        ]
+      },
+      {
+        "type": "stack",
+        "name": "Dots",
+        "part": "dots",
+        "w": 40,
+        "h": 8,
+        "layout": {
+          "direction": "row",
+          "gap": 8,
+          "pad": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "align": "center"
+        },
+        "sizeW": "fit",
+        "sizeH": "fit",
+        "children": [
+          {
+            "type": "ellipse",
+            "name": "Dot {n}",
+            "w": 8,
+            "h": 8,
+            "fill": "accent",
+            "repeat": 3
+          }
+        ]
+      }
+    ]
+  }
+}

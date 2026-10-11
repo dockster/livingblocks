@@ -1,0 +1,181 @@
+{
+  "$schema": "../schema/block.schema.json",
+  "format": 1,
+  "id": "promo-notice",
+  "kind": "notice",
+  "label": "Promo notice",
+  "hint": "An offer with a picture that comes in at a corner after a few seconds and stays away once closed",
+  "category": "feedback",
+  "isNew": true,
+  "settings": {
+    "position": "bottom-left",
+    "delay": 3,
+    "stay": 0,
+    "remember": true
+  },
+  "root": {
+    "type": "stack",
+    "name": "Promo notice",
+    "w": 360,
+    "h": 360,
+    "layout": {
+      "direction": "column",
+      "gap": 16,
+      "pad": [
+        0,
+        0,
+        20,
+        0
+      ],
+      "align": "stretch"
+    },
+    "sizeW": "fixed",
+    "sizeH": "fit",
+    "fill": "surface",
+    "radius": "design",
+    "raised": true,
+    "clip": true,
+    "children": [
+      {
+        "type": "stack",
+        "name": "Top",
+        "w": 360,
+        "h": 160,
+        "layout": {
+          "direction": "column",
+          "gap": 0,
+          "pad": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "align": "stretch"
+        },
+        "sizeW": "fill",
+        "sizeH": "fixed",
+        "fill": "ink",
+        "children": [
+          {
+            "type": "image",
+            "name": "Picture",
+            "part": "picture",
+            "w": 360,
+            "h": 160,
+            "float": {
+              "cover": true
+            }
+          },
+          {
+            "type": "button",
+            "name": "Close",
+            "part": "dismiss",
+            "w": 44,
+            "h": 44,
+            "fill": "surface",
+            "ink": "ink",
+            "radius": 22,
+            "text": "×",
+            "typography": {
+              "role": "body",
+              "size": 28,
+              "weight": 300,
+              "align": "center"
+            },
+            "float": {
+              "right": 12,
+              "top": 12
+            }
+          }
+        ]
+      },
+      {
+        "type": "stack",
+        "name": "Words",
+        "w": 360,
+        "h": 68,
+        "layout": {
+          "direction": "column",
+          "gap": 4,
+          "pad": [
+            0,
+            20,
+            0,
+            20
+          ]
+        },
+        "sizeW": "fill",
+        "sizeH": "fit",
+        "children": [
+          {
+            "type": "text",
+            "name": "Title",
+            "w": 320,
+            "h": 24,
+            "text": "Your first class is on us",
+            "ink": "ink",
+            "typography": {
+              "role": "heading",
+              "size": 17,
+              "weight": 600
+            },
+            "sizeW": "fill"
+          },
+          {
+            "type": "text",
+            "name": "Message",
+            "w": 320,
+            "h": 40,
+            "text": "Book before Sunday and bring a friend for free.",
+            "ink": "ink",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 400
+            },
+            "sizeW": "fill"
+          }
+        ]
+      },
+      {
+        "type": "stack",
+        "name": "Actions",
+        "w": 360,
+        "h": 44,
+        "layout": {
+          "direction": "row",
+          "gap": 0,
+          "pad": [
+            0,
+            20,
+            0,
+            20
+          ],
+          "align": "center",
+          "justify": "end"
+        },
+        "sizeW": "fill",
+        "sizeH": "fit",
+        "children": [
+          {
+            "type": "button",
+            "name": "Book a class",
+            "part": "dismiss",
+            "w": 132,
+            "h": 44,
+            "fill": "accent",
+            "ink": "on-accent",
+            "radius": "design",
+            "text": "Book a class",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 600,
+              "align": "center"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

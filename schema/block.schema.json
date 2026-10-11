@@ -1,0 +1,317 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/dockster/livingblocks/schema/block.schema.json",
+  "title": "livingblocks Block",
+  "description": "A working web component as data: a tree of layers with roles, its behaviour's settings, and the parts that behaviour needs. The rules a schema cannot say (auto layout throughout, the parts each behaviour needs, each behaviour's settings and ranges) are in src/validate.ts, and the build runs them.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "id",
+    "kind",
+    "label",
+    "hint",
+    "category",
+    "settings",
+    "root"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "format": {
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{1,40}$",
+      "description": "the same as the file's name"
+    },
+    "kind": {
+      "enum": [
+        "carousel",
+        "accordion",
+        "notice"
+      ]
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 40
+    },
+    "hint": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "category": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{1,30}$"
+    },
+    "isNew": {
+      "type": "boolean"
+    },
+    "author": {
+      "type": "string",
+      "maxLength": 80
+    },
+    "settings": {
+      "type": "object",
+      "additionalProperties": {
+        "type": [
+          "string",
+          "number",
+          "boolean"
+        ]
+      }
+    },
+    "root": {
+      "$ref": "#/$defs/layer"
+    }
+  },
+  "$defs": {
+    "layer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "name",
+        "w",
+        "h"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "frame",
+            "stack",
+            "text",
+            "button",
+            "image",
+            "ellipse"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60,
+          "description": "{n} is the number of the nearest repeated layer"
+        },
+        "part": {
+          "enum": [
+            "track",
+            "prev",
+            "next",
+            "dots",
+            "pause",
+            "dismiss",
+            "picture",
+            "item",
+            "header",
+            "panel",
+            "icon"
+          ],
+          "description": "what the behaviour needs this layer for"
+        },
+        "w": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 4000
+        },
+        "h": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 4000
+        },
+        "layout": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "direction",
+            "gap",
+            "pad"
+          ],
+          "properties": {
+            "direction": {
+              "enum": [
+                "row",
+                "column"
+              ]
+            },
+            "gap": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1000
+            },
+            "pad": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1000
+              },
+              "minItems": 4,
+              "maxItems": 4,
+              "description": "top, right, bottom, left"
+            },
+            "align": {
+              "enum": [
+                "start",
+                "center",
+                "end",
+                "stretch"
+              ]
+            },
+            "justify": {
+              "enum": [
+                "start",
+                "center",
+                "end",
+                "space-between"
+              ]
+            }
+          }
+        },
+        "sizeW": {
+          "enum": [
+            "fixed",
+            "fit",
+            "fill"
+          ]
+        },
+        "sizeH": {
+          "enum": [
+            "fixed",
+            "fit",
+            "fill"
+          ]
+        },
+        "float": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "placed by hand over a parent that lays out the rest",
+          "properties": {
+            "left": {
+              "type": "number"
+            },
+            "right": {
+              "type": "number"
+            },
+            "top": {
+              "type": "number"
+            },
+            "bottom": {
+              "type": "number"
+            },
+            "centreX": {
+              "type": "boolean"
+            },
+            "centreY": {
+              "type": "boolean"
+            },
+            "cover": {
+              "type": "boolean"
+            }
+          }
+        },
+        "clip": {
+          "type": "boolean"
+        },
+        "fill": {
+          "enum": [
+            "accent",
+            "surface",
+            "ink",
+            "on-accent",
+            "on-picture"
+          ]
+        },
+        "ink": {
+          "enum": [
+            "accent",
+            "surface",
+            "ink",
+            "on-accent",
+            "on-picture"
+          ]
+        },
+        "shade": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "radius": {
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 2000
+            },
+            {
+              "const": "design"
+            }
+          ]
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "typography": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "role",
+            "size",
+            "weight"
+          ],
+          "properties": {
+            "role": {
+              "enum": [
+                "heading",
+                "body"
+              ]
+            },
+            "size": {
+              "type": "number",
+              "minimum": 8,
+              "maximum": 200
+            },
+            "weight": {
+              "type": "number",
+              "minimum": 100,
+              "maximum": 900
+            },
+            "align": {
+              "enum": [
+                "left",
+                "center",
+                "right"
+              ]
+            }
+          }
+        },
+        "hidden": {
+          "type": "boolean"
+        },
+        "repeat": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/layer"
+          }
+        },
+        "raised": {
+          "type": "boolean",
+          "description": "lifted off what is under it by a soft shadow (a card that floats over a page)"
+        },
+        "contain": {
+          "type": "boolean",
+          "description": "a picture shown whole, never cropped (a logo); else it covers its box"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "$schema": "../schema/block.schema.json",
+  "format": 1,
+  "id": "notice",
+  "kind": "notice",
+  "label": "Notice",
+  "hint": "A message that comes in at a corner of the window after a moment and stays away once closed",
+  "category": "feedback",
+  "isNew": true,
+  "settings": {
+    "position": "bottom-right",
+    "delay": 1,
+    "stay": 0,
+    "remember": true
+  },
+  "root": {
+    "type": "stack",
+    "name": "Notice",
+    "w": 400,
+    "h": 140,
+    "layout": {
+      "direction": "column",
+      "gap": 16,
+      "pad": [
+        20,
+        20,
+        20,
+        20
+      ],
+      "align": "stretch"
+    },
+    "sizeW": "fixed",
+    "sizeH": "fit",
+    "fill": "surface",
+    "radius": "design",
+    "children": [
+      {
+        "type": "stack",
+        "name": "Top",
+        "w": 360,
+        "h": 44,
+        "layout": {
+          "direction": "row",
+          "gap": 12,
+          "pad": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "align": "start"
+        },
+        "sizeW": "fill",
+        "sizeH": "fit",
+        "children": [
+          {
+            "type": "text",
+            "name": "Message",
+            "w": 304,
+            "h": 44,
+            "sizeW": "fill",
+            "text": "Something new: save your favourites and find them again on any device.",
+            "ink": "ink",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 400
+            }
+          },
+          {
+            "type": "text",
+            "name": "Close",
+            "part": "dismiss",
+            "w": 44,
+            "h": 44,
+            "text": "×",
+            "ink": "ink",
+            "typography": {
+              "role": "body",
+              "size": 28,
+              "weight": 300,
+              "align": "center"
+            }
+          }
+        ]
+      },
+      {
+        "type": "stack",
+        "name": "Actions",
+        "w": 360,
+        "h": 44,
+        "layout": {
+          "direction": "row",
+          "gap": 8,
+          "pad": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "align": "center",
+          "justify": "end"
+        },
+        "sizeW": "fill",
+        "sizeH": "fit",
+        "children": [
+          {
+            "type": "button",
+            "name": "Got it",
+            "part": "dismiss",
+            "w": 96,
+            "h": 44,
+            "fill": "accent",
+            "ink": "on-accent",
+            "radius": "design",
+            "text": "Got it",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 600,
+              "align": "center"
+            }
+          }
+        ]
+      }
+    ],
+    "raised": true
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "name": "livingblocks",
+  "version": "0.1.0",
+  "description": "Working web components as data: carousels, accordions and notices described as layer trees with roles and settings, and a small runtime that makes them work, with a keyboard and a screen reader. No dependencies, respects reduced motion.",
+  "type": "module",
+  "main": "./dist/livingblocks.mjs",
+  "module": "./dist/livingblocks.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/livingblocks.mjs",
+      "default": "./dist/livingblocks.mjs"
+    },
+    "./global": {
+      "default": "./dist/livingblocks.js"
+    },
+    "./global.min": {
+      "default": "./dist/livingblocks.min.js"
+    },
+    "./schema": {
+      "default": "./schema/block.schema.json"
+    },
+    "./blocks/*": {
+      "default": "./blocks/*"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "blocks",
+    "schema",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "sideEffects": [
+    "./src/runtime.js",
+    "./dist/livingblocks.js",
+    "./dist/livingblocks.min.js"
+  ],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/build.mjs --watch",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "node --test tests/unit/*.test.mjs",
+    "prepublishOnly": "npm run typecheck && npm run build && npm test"
+  },
+  "keywords": [
+    "components",
+    "blocks",
+    "carousel",
+    "accordion",
+    "notice",
+    "accessibility",
+    "no-code",
+    "design-to-code",
+    "reduced-motion",
+    "vanilla"
+  ],
+  "author": "uxspot.io",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dockster/livingblocks.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dockster/livingblocks/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "typescript": "^7.0.2"
+  }
+}
