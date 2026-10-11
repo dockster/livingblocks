@@ -2,12 +2,12 @@
 // made to work on a page by the runtime (livingblocks/global, window.LivingBlocks).
 // Every Block in blocks/ is here, checked at build time.
 
-import { BLOCKS } from './registry.generated';
-import type { Block } from './types';
+import { BLOCKS } from './registry.generated.js';
+import type { Block } from './types.js';
 
-export * from './types';
-export { validateBlock, KINDS, PARTS, NEEDS, SETTINGS, TYPE_SCALE, type Verdict } from './validate';
-export { CATEGORIES, type Category } from './categories';
+export * from './types.js';
+export { validateBlock, KINDS, PARTS, NEEDS, SETTINGS, TYPE_SCALE, type Verdict } from './validate.js';
+export { CATEGORIES, type Category } from './categories.js';
 export { BLOCKS };
 
 /** A Block by its id. */

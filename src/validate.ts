@@ -6,7 +6,7 @@
 // the parts each behaviour needs, the settings each one reads and their ranges,
 // and sizes a design can hold.
 
-import { FORMAT, type Block, type Kind, type Layer, type Part } from './types';
+import { FORMAT, type Block, type Kind, type Layer, type Part } from './types.js';
 
 export const KINDS: readonly Kind[] = ['carousel', 'accordion', 'notice'];
 export const PARTS: readonly Part[] = ['track', 'prev', 'next', 'dots', 'pause', 'dismiss', 'picture', 'item', 'header', 'panel', 'icon'];

@@ -13,6 +13,7 @@
       "default": "./dist/livingblocks.mjs"
     },
     "./global": {
+      "types": "./dist/global.d.ts",
       "default": "./dist/livingblocks.js"
     },
     "./global.min": {
