@@ -1,3 +1,7 @@
 node_modules
 dist
 src/registry.generated.ts
+
+# notes for Claude Code: kept off GitHub (owner, 2026-10-13)
+CLAUDE.md
+CLAUDE.local.md

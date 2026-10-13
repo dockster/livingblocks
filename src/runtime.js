@@ -547,7 +547,13 @@
     var stayTimer = 0;
 
     el.setAttribute('role', 'region');
-    el.style.maxWidth = 'calc(100% - 32px)';
+    // a Notice floating over the window, a card narrower than it, keeps 16 clear of its edges on
+    // a narrow one. A Banner takes the width its page gives it, in the page's flow or pinned
+    // across its container: capped, it stopped 32 short of the right edge (uxdeck, 2026-10-13)
+    var floats = /^(fixed|absolute|sticky)$/.test(window.getComputedStyle(el).position);
+    var holder = el.offsetParent || el.parentElement;
+    var spans = !!holder && Math.abs(el.getBoundingClientRect().width - holder.getBoundingClientRect().width) <= 2;
+    if (floats && !spans) el.style.maxWidth = 'calc(100% - 32px)';
     el.style.display = 'none';
     el.setAttribute('data-living-on', 'false');
 

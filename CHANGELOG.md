@@ -1,6 +1,14 @@
 # Changelog
 
-## 0.1.0 (unreleased)
+## 0.1.1 (2026-10-13)
+
+- A Banner fills what it is in. The runtime capped every Notice at
+  `calc(100% - 32px)`, meant for a card floating over a narrow window, so a
+  Banner in the page's flow, or pinned across its container, stopped 32 px
+  short of the right edge. Only a floating Notice narrower than its container
+  is capped now.
+
+## 0.1.0 (2026-10-11)
 
 - The format (format 1): Blocks as layer trees with roles, settings and parts;
   the JSON Schema; the checker.
