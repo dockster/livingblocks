@@ -114,3 +114,39 @@ test('the runtime loads as a plain script and offers LivingBlocks.start', () => 
   assert.equal(typeof window.LivingBlocks.start, 'function');
   assert.match(window.LivingBlocks.version, /^\d+\.\d+\.\d+$/);
 });
+
+test('the ring: its settings within their ranges, a track it cannot do without', () => {
+  const ring = JSON.parse(readFileSync('blocks/ring.json', 'utf8'));
+  assert.deepEqual(validateBlock(ring), { ok: true, errors: [] });
+  assert.deepEqual(NEEDS.ring, ['track']);
+  const far = copy(ring);
+  far.settings.radius = 5000;
+  assert.equal(validateBlock(far).ok, false);
+  const odd = copy(ring);
+  odd.settings.drag = 'yes';
+  assert.equal(validateBlock(odd).ok, false);
+  const bare = copy(ring);
+  delete bare.root.children[0].part;
+  assert.equal(validateBlock(bare).ok, false);
+});
+
+test('the showcase and the mosaic: their settings within range, the parts they need', () => {
+  const show = JSON.parse(readFileSync('blocks/showcase.json', 'utf8'));
+  const grid = JSON.parse(readFileSync('blocks/mosaic.json', 'utf8'));
+  assert.deepEqual(validateBlock(show), { ok: true, errors: [] });
+  assert.deepEqual(validateBlock(grid), { ok: true, errors: [] });
+  assert.deepEqual(NEEDS.showcase, ['track']);
+  assert.deepEqual(NEEDS.mosaic, ['tile']);
+  const fast = copy(show);
+  fast.settings.speed = 9;
+  assert.equal(validateBlock(fast).ok, false);
+  const odd = copy(show);
+  odd.settings.transition = 'ripple';
+  assert.equal(validateBlock(odd).ok, false);
+  const many = copy(grid);
+  many.settings.columns = 12;
+  assert.equal(validateBlock(many).ok, false);
+  const video = copy(grid);
+  video.settings.video = 'never';
+  assert.equal(validateBlock(video).ok, false);
+});

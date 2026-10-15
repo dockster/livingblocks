@@ -19,7 +19,7 @@
 export const FORMAT = 1;
 
 /** The behaviours there are; each is played by the runtime. */
-export type Kind = 'carousel' | 'accordion' | 'notice';
+export type Kind = 'carousel' | 'accordion' | 'notice' | 'ring' | 'showcase' | 'mosaic';
 
 /**
  * The parts a behaviour needs, marked on its layers. A carousel: its track of
@@ -27,7 +27,10 @@ export type Kind = 'carousel' | 'accordion' | 'notice';
  * each item, its header (pressed to open and close) and its panel (what
  * opens), an icon that turns. A notice: what dismisses it.
  */
-export type Part = 'track' | 'prev' | 'next' | 'dots' | 'pause' | 'dismiss' | 'picture' | 'item' | 'header' | 'panel' | 'icon';
+/**
+ * A showcase: its counter (01 / 05) and its progress line. A mosaic: each tile.
+ */
+export type Part = 'track' | 'prev' | 'next' | 'dots' | 'pause' | 'dismiss' | 'picture' | 'item' | 'header' | 'panel' | 'icon' | 'tile' | 'counter' | 'progress';
 
 /**
  * Colours by role, read from the design the Block lands in: its accent (the

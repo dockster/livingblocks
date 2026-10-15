@@ -8,8 +8,8 @@
 
 import { FORMAT, type Block, type Kind, type Layer, type Part } from './types.js';
 
-export const KINDS: readonly Kind[] = ['carousel', 'accordion', 'notice'];
-export const PARTS: readonly Part[] = ['track', 'prev', 'next', 'dots', 'pause', 'dismiss', 'picture', 'item', 'header', 'panel', 'icon'];
+export const KINDS: readonly Kind[] = ['carousel', 'accordion', 'notice', 'ring', 'showcase', 'mosaic'];
+export const PARTS: readonly Part[] = ['track', 'prev', 'next', 'dots', 'pause', 'dismiss', 'picture', 'item', 'header', 'panel', 'icon', 'tile', 'counter', 'progress'];
 const LAYER_TYPES = ['frame', 'stack', 'text', 'button', 'image', 'ellipse'];
 const COLOURS = ['accent', 'surface', 'ink', 'on-accent', 'on-picture'];
 const SIZING = ['fixed', 'fit', 'fill'];
@@ -19,6 +19,10 @@ export const NEEDS: Record<Kind, Part[]> = {
   carousel: ['track', 'prev', 'next', 'dots', 'pause'],
   accordion: ['item', 'header', 'panel'],
   notice: ['dismiss'],
+  ring: ['track'],
+  showcase: ['track'],
+  // the Block itself is the grid when no layer inside is marked track
+  mosaic: ['tile'],
 };
 
 type Range = { type: 'number'; min: number; max: number } | { type: 'boolean' } | { type: 'enum'; values: string[] };
@@ -44,6 +48,39 @@ export const SETTINGS: Record<Kind, Record<string, Range>> = {
     delay: { type: 'number', min: 0, max: 60 },
     stay: { type: 'number', min: 0, max: 120 },
     remember: { type: 'boolean' },
+  },
+  // the track's children stand around a circle: its radius and the eye's distance (px), the degrees the page's
+  // scroll turns it, its tilt (degrees), how much the cards light up and lean with the scroll's speed (0 to 1),
+  // a spin of its own (degrees a second), and whether it can be dragged
+  ring: {
+    radius: { type: 'number', min: 100, max: 1600 },
+    depth: { type: 'number', min: 200, max: 3000 },
+    turn: { type: 'number', min: 0, max: 720 },
+    tilt: { type: 'number', min: 0, max: 15 },
+    light: { type: 'number', min: 0, max: 1 },
+    lean: { type: 'number', min: 0, max: 1 },
+    spin: { type: 'number', min: 0, max: 60 },
+    drag: { type: 'boolean' },
+  },
+  // a hero of stacked slides: plays on its own every `interval` seconds, changes by a fade, zoom, blur or wipe
+  // over `speed` seconds, reveals its words line by line, blurs its full-bleed picture by `blur` px, the wheel if asked
+  showcase: {
+    autoplay: { type: 'boolean' },
+    interval: { type: 'number', min: 2, max: 30 },
+    transition: { type: 'enum', values: ['fade', 'zoom', 'blur', 'wipe'] },
+    speed: { type: 'number', min: 0.2, max: 3 },
+    lines: { type: 'boolean' },
+    blur: { type: 'number', min: 0, max: 60 },
+    wheel: { type: 'boolean' },
+    loop: { type: 'boolean' },
+    start: { type: 'number', min: 0, max: 99 },
+  },
+  // a dense grid: columns across, the gap (px), when its videos play, whether tiles rise in as they arrive
+  mosaic: {
+    columns: { type: 'number', min: 1, max: 8 },
+    gap: { type: 'number', min: 0, max: 48 },
+    video: { type: 'enum', values: ['view', 'hover', 'always'] },
+    reveal: { type: 'boolean' },
   },
 };
 

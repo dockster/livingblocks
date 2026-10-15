@@ -654,7 +654,678 @@
     };
   }
 
-  var KINDS = { carousel: carousel, accordion: accordion, notice: notice };
+  /**
+   * A ring: the track's children stand around a circle in depth, after
+   * Codrops' On-Scroll 3D Carousel (MIT, docs/THIRD-PARTY.md; rebuilt without
+   * GSAP). The page's scroll turns it as it crosses the screen, tilting a
+   * little and lighting the cards from bright to their own; the speed of the
+   * scroll pushes the cards out and leans them, settling on a spring. It can
+   * spin on its own, and be dragged (or turned with the arrow keys, a card at
+   * a time). Under reduced motion it stands still, facing the front, and
+   * turns only when asked.
+   */
+  function ring(el, spec) {
+    var s = spec.settings || {};
+    var track = partOf(el, 'track');
+    if (!track) return null;
+    var cards = Array.prototype.slice.call(track.children);
+    var n = cards.length;
+    if (n < 2) return null;
+    var num = function (v, d, lo, hi) { v = typeof v === 'number' && isFinite(v) ? v : d; return Math.min(hi, Math.max(lo, v)); };
+    var radius = num(s.radius, 500, 100, 1600);
+    var depth = num(s.depth, 900, 200, 3000);
+    var turn = num(s.turn, 180, 0, 720);
+    var tilt = num(s.tilt, 3, 0, 15);
+    var light = num(s.light, 0.5, 0, 1);
+    var lean = num(s.lean, 0.5, 0, 1) * 2;
+    var spinSpeed = num(s.spin, 0, 0, 60);
+    var still = reduced();
+    var step = 360 / n;
+    // what is put back on stop: each element's own inline style
+    var own = [el, track].concat(cards).map(function (x) { return [x, x.getAttribute('style')]; });
+    var offs = [];
+
+    // the cards' own size, before they are taken out of the row
+    var sizes = cards.map(function (c) { return [c.offsetWidth, c.offsetHeight]; });
+    var W = Math.max.apply(null, sizes.map(function (z) { return z[0]; })) || 200;
+    var H = Math.max.apply(null, sizes.map(function (z) { return z[1]; })) || 260;
+    if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
+    el.style.perspective = depth + 'px';
+    el.style.overflow = 'clip';
+    el.style.touchAction = s.drag === false ? '' : 'pan-y';
+    if (s.drag !== false) el.style.cursor = 'grab';
+    track.style.position = 'absolute';
+    track.style.left = '50%';
+    track.style.top = '50%';
+    track.style.width = W + 'px';
+    track.style.height = H + 'px';
+    track.style.margin = -H / 2 + 'px 0 0 ' + -W / 2 + 'px';
+    track.style.transformStyle = 'preserve-3d';
+    track.style.display = 'block';
+    cards.forEach(function (c, i) {
+      c.style.position = 'absolute';
+      c.style.left = (W - sizes[i][0]) / 2 + 'px';
+      c.style.top = (H - sizes[i][1]) / 2 + 'px';
+      c.style.margin = '0';
+      c.style.transformStyle = 'preserve-3d';
+      c.setAttribute('role', 'group');
+      c.setAttribute('aria-roledescription', 'slide');
+      c.setAttribute('aria-label', i + 1 + ' of ' + n);
+    });
+    var tabbed = !el.hasAttribute('tabindex');
+    el.setAttribute('role', 'region');
+    el.setAttribute('aria-roledescription', 'carousel');
+    if (tabbed) el.setAttribute('tabindex', '0');
+
+    // the box that scrolls it: the nearest one that scrolls, else the window
+    var box = el.parentElement;
+    while (box && box !== document.body) {
+      var oy = getComputedStyle(box).overflowY;
+      if ((oy === 'auto' || oy === 'scroll') && box.scrollHeight > box.clientHeight) break;
+      box = box.parentElement;
+    }
+    if (box === document.body) box = null;
+    var view = function () {
+      if (!box) return { top: 0, h: window.innerHeight };
+      var r = box.getBoundingClientRect();
+      return { top: r.top, h: box.clientHeight };
+    };
+
+    var spin = 0; // degrees turned by the drag, the keys and its own spin
+    var spinTo = 0;
+    var spread = { v: 0, vel: 0 };
+    var tip = { v: 0, vel: 0 };
+    var lastTop = null;
+    var lastT = 0;
+    var frame = 0;
+    var seen = true;
+
+    var paint = function (p) {
+      var k = 1 - 2 * p;
+      var rot = still ? 0 : -turn * p;
+      track.style.transform = 'translateZ(' + -radius + 'px) rotateX(' + (still ? 0 : tilt * k) + 'deg) rotateY(' + (rot + spin) + 'deg) rotateZ(' + (still ? 0 : tilt * k) + 'deg)';
+      // from bright to its own (and a shade under) on an ease out, as it crosses
+      var e = 1 - Math.pow(1 - p, 3);
+      var b = still || !light ? 1 : 1 + 1.5 * light + (-1.7 * light) * e;
+      var z = still ? 0 : tilt * 3.3 * k;
+      cards.forEach(function (c, i) {
+        c.style.transform = 'rotateY(' + i * step + 'deg) translateZ(' + (radius + spread.v) + 'px) rotateY(' + tip.v + 'deg) rotateZ(' + z + 'deg)';
+        c.style.filter = b === 1 ? '' : 'brightness(' + Math.round(b * 100) + '%)';
+      });
+    };
+    var progress = function (r) {
+      var v = view();
+      return Math.min(1, Math.max(0, (v.top + v.h - r.top) / (v.h + r.height)));
+    };
+    // a spring towards `to`; true while it moves
+    var spring = function (sp, to, dt) {
+      sp.vel += (120 * (to - sp.v) - 14 * sp.vel) * dt;
+      sp.v += sp.vel * dt;
+      if (Math.abs(to - sp.v) < 0.01 && Math.abs(sp.vel) < 0.01) {
+        sp.v = to;
+        sp.vel = 0;
+        return false;
+      }
+      return true;
+    };
+    var tick = function (now) {
+      frame = 0;
+      var dt = lastT ? Math.min(1 / 30, (now - lastT) / 1000) : 1 / 60;
+      lastT = now;
+      var r = el.getBoundingClientRect();
+      // the speed it moves on screen, px a second (whatever scrolls it)
+      var speed = lastTop === null ? 0 : (lastTop - r.top) / dt;
+      lastTop = r.top;
+      var busy = false;
+      if (!still) {
+        if (spinSpeed && seen && !dragging) spinTo -= spinSpeed * dt;
+        busy = spring(spread, Math.min(Math.abs(speed) * 0.05 * lean, 180 * lean), dt) || busy;
+        busy = spring(tip, Math.max(-20 * lean, Math.min(20 * lean, -speed * 0.006 * lean)), dt) || busy;
+        var gap = spinTo - spin;
+        spin += Math.abs(gap) < 0.01 ? gap : gap * (1 - Math.exp(-dt / 0.12));
+        busy = busy || Math.abs(gap) > 0.01 || (spinSpeed > 0 && seen) || dragging;
+      } else spin = spinTo;
+      paint(progress(r));
+      if (busy) frame = window.requestAnimationFrame(tick);
+      else lastT = 0;
+    };
+    var wake = function () {
+      if (!frame) frame = window.requestAnimationFrame(tick);
+    };
+    var onScroll = function () { wake(); };
+    window.addEventListener('scroll', onScroll, true);
+    window.addEventListener('resize', onScroll);
+    offs.push(function () {
+      window.removeEventListener('scroll', onScroll, true);
+      window.removeEventListener('resize', onScroll);
+    });
+    if (window.IntersectionObserver) {
+      var io = new IntersectionObserver(function (es) {
+        seen = es[es.length - 1].isIntersecting;
+        if (seen) wake();
+      });
+      io.observe(el);
+      offs.push(function () { io.disconnect(); });
+    }
+
+    // dragged sideways it turns: the front card follows the pointer
+    var dragging = false;
+    var degPerPx = 180 / (Math.PI * radius);
+    if (s.drag !== false) {
+      var x0 = 0, y0 = 0, from = 0, id = -1, moved = false, trail = [];
+      var down = function (e) {
+        if (e.button !== 0 || id !== -1) return;
+        id = e.pointerId;
+        x0 = e.clientX;
+        y0 = e.clientY;
+        from = spinTo;
+        moved = false;
+        trail = [[e.timeStamp, e.clientX]];
+      };
+      var move = function (e) {
+        if (e.pointerId !== id) return;
+        var dx = e.clientX - x0;
+        if (!moved) {
+          if (Math.abs(e.clientY - y0) > Math.abs(dx) && Math.abs(e.clientY - y0) > 6) { id = -1; return; }
+          if (Math.abs(dx) < 6) return;
+          moved = true;
+          dragging = true;
+          el.style.cursor = 'grabbing';
+          if (el.setPointerCapture) el.setPointerCapture(id);
+        }
+        spinTo = from + dx * degPerPx;
+        trail.push([e.timeStamp, e.clientX]);
+        while (trail.length > 2 && e.timeStamp - trail[0][0] > 100) trail.shift();
+        wake();
+      };
+      var up = function (e) {
+        if (e.pointerId !== id) return;
+        id = -1;
+        if (!moved) return;
+        dragging = false;
+        el.style.cursor = 'grab';
+        // it keeps turning a little after it is let go
+        var t = trail[0];
+        var last = trail[trail.length - 1];
+        // its speed over at least a frame and at most 3 px a millisecond, coasting half a turn at most: a drag
+        // the browser delivers in two events a millisecond apart would otherwise fling it round many times
+        if (!still && e.timeStamp - last[0] < 80) {
+          var v = Math.max(-3, Math.min(3, (last[1] - t[1]) / Math.max(16, last[0] - t[0])));
+          spinTo += Math.max(-180, Math.min(180, v * 350 * degPerPx));
+        }
+        wake();
+        // the click a drag ends with is not one
+        var swallow = function (c) { c.preventDefault(); c.stopPropagation(); };
+        el.addEventListener('click', swallow, { capture: true, once: true });
+        window.setTimeout(function () { el.removeEventListener('click', swallow, true); }, 0);
+      };
+      el.addEventListener('pointerdown', down);
+      el.addEventListener('pointermove', move);
+      el.addEventListener('pointerup', up);
+      el.addEventListener('pointercancel', up);
+      offs.push(function () {
+        el.removeEventListener('pointerdown', down);
+        el.removeEventListener('pointermove', move);
+        el.removeEventListener('pointerup', up);
+        el.removeEventListener('pointercancel', up);
+      });
+    }
+    // the arrow keys turn it a card at a time
+    var key = function (e) {
+      if (e.target !== el) return;
+      var d = e.key === 'ArrowRight' ? -1 : e.key === 'ArrowLeft' ? 1 : 0;
+      if (!d) return;
+      e.preventDefault();
+      spinTo = Math.round(spinTo / step) * step + d * step;
+      wake();
+    };
+    el.addEventListener('keydown', key);
+    offs.push(function () { el.removeEventListener('keydown', key); });
+
+    paint(progress(el.getBoundingClientRect()));
+    wake();
+    return function () {
+      window.cancelAnimationFrame(frame);
+      offs.forEach(function (f) { f(); });
+      own.forEach(function (o) {
+        if (o[1] === null) o[0].removeAttribute('style');
+        else o[0].setAttribute('style', o[1]);
+      });
+      cards.forEach(function (c) { c.removeAttribute('role'); c.removeAttribute('aria-roledescription'); c.removeAttribute('aria-label'); });
+      el.removeAttribute('role');
+      el.removeAttribute('aria-roledescription');
+      if (tabbed) el.removeAttribute('tabindex');
+    };
+  }
+
+  /** put an element's inline style back as it was (null: none) */
+  function keepStyles(list) {
+    var own = list.map(function (x) { return [x, x.getAttribute('style')]; });
+    return function () {
+      own.forEach(function (o) {
+        if (o[1] === null) o[0].removeAttribute('style');
+        else o[0].setAttribute('style', o[1]);
+      });
+    };
+  }
+  /** the videos inside an element, set to play silently inline */
+  function videosIn(el) {
+    return Array.prototype.slice.call(el.querySelectorAll('video')).map(function (v) {
+      v.muted = true;
+      v.playsInline = true;
+      v.setAttribute('playsinline', '');
+      return v;
+    });
+  }
+  function play(v, on) {
+    if (on) {
+      var p = v.play && v.play();
+      if (p && p.catch) p.catch(function () {});
+    } else if (v.pause) v.pause();
+  }
+
+  /**
+   * Split an element's words into lines, each line a mask the words can move
+   * through (a line reveal). Returns the lines' words, line by line, and a
+   * function that gives the element its own words back.
+   */
+  function linesOf(el) {
+    var doc = el.ownerDocument;
+    var html = el.innerHTML;
+    var words = [];
+    var walker = doc.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    var texts = [];
+    while (walker.nextNode()) texts.push(walker.currentNode);
+    texts.forEach(function (t) {
+      var frag = doc.createDocumentFragment();
+      (t.textContent || '').split(/(\s+)/).forEach(function (part) {
+        if (!part) return;
+        if (/^\s+$/.test(part)) return frag.appendChild(doc.createTextNode(part));
+        var w = doc.createElement('span');
+        w.className = 'living-word';
+        w.style.display = 'inline-block';
+        w.textContent = part;
+        frag.appendChild(w);
+        words.push(w);
+      });
+      t.parentNode.replaceChild(frag, t);
+    });
+    // words on the same line share a mask
+    var lines = [];
+    var top = null;
+    words.forEach(function (w) {
+      var y = w.offsetTop;
+      if (top === null || Math.abs(y - top) > 2) {
+        lines.push([]);
+        top = y;
+      }
+      lines[lines.length - 1].push(w);
+    });
+    lines.forEach(function (line) {
+      var mask = doc.createElement('span');
+      mask.className = 'living-line';
+      mask.style.cssText = 'display:block;overflow:hidden;overflow:clip;padding-bottom:0.1em;margin-bottom:-0.1em';
+      line[0].parentNode.insertBefore(mask, line[0]);
+      line.forEach(function (w, i) {
+        var next = w.nextSibling;
+        mask.appendChild(w);
+        if (i < line.length - 1 && next && next.nodeType === 3) mask.appendChild(next);
+      });
+    });
+    return { lines: lines, restore: function () { el.innerHTML = html; } };
+  }
+
+  // ── Showcase ──────────────────────────────────────────────────────────────
+  // A hero of stacked slides (the track's children), one shown at a time: a
+  // full-bleed picture or video behind (the slide's `picture`, blurred if
+  // asked), its own words revealed line by line, the change from one to the
+  // next a fade, a zoom, a blur or a wipe (after giordanobetti.com's reel,
+  // observed 2026-10-15). Previous and Next, a counter, a progress line, the
+  // arrow keys, a swipe, playing on its own, and the wheel if asked. Videos
+  // play while their slide shows. Under reduced motion it changes at once,
+  // never plays on its own, and its videos wait.
+  function showcase(el, spec) {
+    var s = spec.settings || {};
+    var track = partOf(el, 'track');
+    if (!track) return null;
+    var slides = Array.prototype.slice.call(track.children);
+    var n = slides.length;
+    if (!n) return null;
+    var still = reduced();
+    var speed = Math.max(0.2, Math.min(3, s.speed || 1.2)) * 1000;
+    var loop = s.loop !== false;
+    var at = Math.max(0, Math.min(n - 1, s.start || 0));
+    var offs = [];
+    var anims = [];
+    var prev = partOf(el, 'prev');
+    var next = partOf(el, 'next');
+    var counter = partOf(el, 'counter');
+    var bar = partOf(el, 'progress');
+    var pauseBtn = partOf(el, 'pause');
+    var restore = keepStyles([el, track, bar].concat(slides).filter(Boolean));
+    var counterText = counter ? counter.textContent : '';
+
+    el.setAttribute('role', 'region');
+    el.setAttribute('aria-roledescription', 'carousel');
+    if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0');
+    // the slides on top of one another, the track as tall as the first
+    track.style.display = 'grid';
+    // one column as wide as the hero and one row: an auto column would shrink the slides to their words
+    track.style.gridTemplateColumns = 'minmax(0, 1fr)';
+    track.style.gridTemplateRows = 'minmax(0, 1fr)';
+    track.style.width = '100%';
+    track.style.flex = '1 1 auto';
+    track.style.minWidth = '0';
+    track.style.position = 'relative';
+    var pics = [];
+    var texts = [];
+    slides.forEach(function (sl, i) {
+      sl.style.gridArea = '1 / 1';
+      sl.style.width = '100%';
+      sl.style.minWidth = '0';
+      sl.setAttribute('role', 'group');
+      sl.setAttribute('aria-roledescription', 'slide');
+      sl.setAttribute('aria-label', i + 1 + ' of ' + n);
+      var pic = sl.querySelector('[data-living-part="picture"]');
+      if (pic && s.blur) {
+        pics.push([pic, pic.getAttribute('style')]);
+        pic.style.filter = 'blur(' + Math.min(60, s.blur) + 'px)';
+        pic.style.transform = 'scale(1.08)';
+      }
+    });
+    // each slide's words, line by line, once they are laid out
+    if (s.lines !== false && !still) {
+      slides.forEach(function (sl) {
+        var list = [];
+        Array.prototype.slice.call(sl.querySelectorAll('*')).forEach(function (t) {
+          if (t.children.length || !/\S/.test(t.textContent || '') || t.closest('[data-living-part="picture"], video, button, a')) return;
+          list.push(linesOf(t));
+        });
+        texts.push(list);
+      });
+    }
+    var vids = slides.map(videosIn);
+    var words = function (i) {
+      return (texts[i] || []).reduce(function (all, t) { return all.concat(t.lines); }, []);
+    };
+    var reveal = function (i, dir) {
+      // in: up through each line's mask, one word after another; out: on up and away
+      words(i).forEach(function (line, li) {
+        line.forEach(function (w, wi) {
+          var d = (li * 0.08 + wi * 0.03) * 1000;
+          anims.push(w.animate(dir > 0 ? [{ transform: 'translateY(110%)' }, { transform: 'none' }] : [{ transform: 'none' }, { transform: 'translateY(-110%)' }], { duration: speed * 0.6, delay: dir > 0 ? speed * 0.35 + d : d * 0.5, easing: EASE, fill: 'both' }));
+        });
+      });
+    };
+    var KEY = {
+      fade: [[{ opacity: 0 }, { opacity: 1 }], [{ opacity: 1 }, { opacity: 1 }]],
+      zoom: [[{ opacity: 0, transform: 'scale(1.15)' }, { opacity: 1, transform: 'none' }], [{ transform: 'none' }, { transform: 'scale(0.95)' }]],
+      blur: [[{ opacity: 0, filter: 'blur(24px)', transform: 'scale(1.08)' }, { opacity: 1, filter: 'blur(0)', transform: 'none' }], [{ filter: 'blur(0)' }, { filter: 'blur(12px)' }]],
+      wipe: [[{ clipPath: 'inset(0 0 0 100%)' }, { clipPath: 'inset(0 0 0 0)' }], [{ opacity: 1 }, { opacity: 1 }]],
+    };
+    var kind = KEY[s.transition] ? s.transition : 'blur';
+    var paint = function (from, to, dir) {
+      slides.forEach(function (sl, i) {
+        var on = i === to;
+        sl.style.zIndex = on ? '2' : i === from ? '1' : '0';
+        sl.style.visibility = on || i === from ? '' : 'hidden';
+        sl.setAttribute('aria-hidden', on ? 'false' : 'true');
+        if (on) sl.removeAttribute('inert');
+        else sl.setAttribute('inert', '');
+        vids[i].forEach(function (v) { play(v, on && !still); });
+      });
+      if (counter) counter.textContent = String(to + 1).padStart(2, '0') + ' / ' + String(n).padStart(2, '0');
+      if (prev) prev.setAttribute('data-living-off', !loop && to === 0 ? 'true' : 'false');
+      if (next) next.setAttribute('data-living-off', !loop && to === n - 1 ? 'true' : 'false');
+      if (from === null || from === to || still) {
+        if (from !== null && from !== to) slides[from].style.visibility = 'hidden';
+        return;
+      }
+      var k = KEY[kind];
+      var wipe = kind === 'wipe' && dir < 0 ? [{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)' }] : k[0];
+      anims.push(slides[to].animate(wipe, { duration: speed, easing: EASE }));
+      var out = slides[from].animate(k[1], { duration: speed, easing: EASE });
+      anims.push(out);
+      out.onfinish = function () {
+        if (at !== from) slides[from].style.visibility = 'hidden';
+      };
+      reveal(from, -1);
+      reveal(to, 1);
+    };
+    var busy = 0;
+    var go = function (to, dir) {
+      if (to < 0 || to >= n) {
+        if (!loop) return false;
+        to = (to + n) % n;
+      }
+      if (to === at) return false;
+      var from = at;
+      at = to;
+      busy = Date.now();
+      paint(from, to, dir);
+      restartTimer();
+      return true;
+    };
+    var step = function (d) { return go(at + d, d); };
+
+    // playing on its own, with a progress line that fills over each slide's time
+    var playing = !!s.autoplay && !still;
+    var held = false;
+    var timer = 0;
+    var interval = Math.max(2, Math.min(30, s.interval || 6)) * 1000;
+    var fill = null;
+    var restartTimer = function () {
+      window.clearTimeout(timer);
+      if (fill) fill.cancel();
+      if (bar) {
+        bar.style.transformOrigin = '0 50%';
+        fill = playing && !held ? bar.animate([{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], { duration: interval, easing: 'linear', fill: 'both' }) : null;
+        if (!fill) bar.style.transform = 'scaleX(' + (n > 1 ? at / (n - 1) : 1) + ')';
+      }
+      if (playing && !held) timer = window.setTimeout(function () { step(1); }, interval);
+    };
+    var hold = function (v) {
+      held = v;
+      restartTimer();
+    };
+    if (pauseBtn) {
+      pauseBtn.style.display = s.autoplay ? '' : 'none';
+      offs.push(asButton(pauseBtn, 'Pause', function () {
+        playing = !playing;
+        pauseBtn.setAttribute('aria-label', playing ? 'Pause' : 'Play');
+        pauseBtn.setAttribute('data-living-on', playing ? 'false' : 'true');
+        restartTimer();
+      }));
+    }
+    ['pointerenter', 'focusin'].forEach(function (t) {
+      var f = function () { hold(true); };
+      el.addEventListener(t, f);
+      offs.push(function () { el.removeEventListener(t, f); });
+    });
+    ['pointerleave', 'focusout'].forEach(function (t) {
+      var f = function (e) {
+        if (t === 'focusout' && el.contains(e.relatedTarget)) return;
+        hold(false);
+      };
+      el.addEventListener(t, f);
+      offs.push(function () { el.removeEventListener(t, f); });
+    });
+    if (prev) offs.push(asButton(prev, 'Previous slide', function () { step(-1); }));
+    if (next) offs.push(asButton(next, 'Next slide', function () { step(1); }));
+    var key = function (e) {
+      if (e.target !== el) return;
+      var d = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 0;
+      if (d && step(d)) e.preventDefault();
+    };
+    el.addEventListener('keydown', key);
+    offs.push(function () { el.removeEventListener('keydown', key); });
+    // a swipe sideways
+    var x0 = null;
+    var down = function (e) { x0 = e.pointerType === 'mouse' && e.button !== 0 ? null : [e.clientX, e.clientY]; };
+    var up = function (e) {
+      if (!x0) return;
+      var dx = e.clientX - x0[0];
+      var dy = e.clientY - x0[1];
+      x0 = null;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) step(dx < 0 ? 1 : -1);
+    };
+    el.addEventListener('pointerdown', down);
+    el.addEventListener('pointerup', up);
+    el.style.touchAction = 'pan-y';
+    offs.push(function () {
+      el.removeEventListener('pointerdown', down);
+      el.removeEventListener('pointerup', up);
+    });
+    // the wheel, if asked: a slide a turn, never past the ends (the page scrolls on there)
+    if (s.wheel) {
+      var acc = 0;
+      var wheel = function (e) {
+        if (Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
+        if (Date.now() - busy < speed) {
+          if ((e.deltaY > 0 && (loop || at < n - 1)) || (e.deltaY < 0 && (loop || at > 0))) e.preventDefault();
+          return;
+        }
+        acc += e.deltaY;
+        if (Math.abs(acc) < 40) return;
+        var d = acc > 0 ? 1 : -1;
+        acc = 0;
+        if (step(d)) e.preventDefault();
+      };
+      el.addEventListener('wheel', wheel, { passive: false });
+      offs.push(function () { el.removeEventListener('wheel', wheel); });
+    }
+
+    paint(null, at, 1);
+    if (!still) reveal(at, 1);
+    restartTimer();
+    return function () {
+      window.clearTimeout(timer);
+      if (fill) fill.cancel();
+      anims.forEach(function (a) { a.cancel(); });
+      offs.forEach(function (f) { f(); });
+      vids.forEach(function (l) { l.forEach(function (v) { play(v, false); }); });
+      texts.forEach(function (l) { l.forEach(function (t) { t.restore(); }); });
+      pics.forEach(function (p) {
+        if (p[1] === null) p[0].removeAttribute('style');
+        else p[0].setAttribute('style', p[1]);
+      });
+      slides.forEach(function (sl) {
+        ['role', 'aria-roledescription', 'aria-label', 'aria-hidden', 'inert'].forEach(function (a) { sl.removeAttribute(a); });
+      });
+      if (counter) counter.textContent = counterText;
+      restore();
+    };
+  }
+
+  // ── Mosaic ────────────────────────────────────────────────────────────────
+  // A dense grid of pictures and videos (the `tile` parts, or the track's
+  // children), after au-rel.io's (observed 2026-10-15): each tile spans as
+  // many columns, and half-rows of a square, as its size in the design;
+  // `columns` across (fewer on a breakpoint), `gap` between; the grid packs
+  // tiles into the holes. Videos play while on screen (or on hover, or all
+  // the time); tiles can rise in as they arrive. Under reduced motion the
+  // tiles are simply there and the videos wait.
+  function mosaic(el, spec) {
+    var s = spec.settings || {};
+    var track = partOf(el, 'track') || el;
+    var tiles = Array.prototype.slice.call(track.querySelectorAll('[data-living-part="tile"]')).filter(function (t) { return t.closest('[data-living]') === el; });
+    if (!tiles.length) tiles = Array.prototype.slice.call(track.children);
+    if (!tiles.length) return null;
+    var still = reduced();
+    var cols = Math.max(1, Math.min(8, Math.round(s.columns || 4)));
+    var gap = Math.max(0, Math.min(48, s.gap === undefined ? 4 : s.gap));
+    var offs = [];
+    var anims = [];
+    // what lies between the grid and its tiles (rows, as the canvas lays them out) steps aside
+    var between = [];
+    tiles.forEach(function (t) {
+      for (var p = t.parentElement; p && p !== track; p = p.parentElement) if (between.indexOf(p) < 0) between.push(p);
+    });
+    var restore = keepStyles([track].concat(between, tiles));
+    // each tile's span, from its size in the design: the narrowest tile is one column, half of it one row,
+    // so the spans hold whatever width the grid is given (it fills its container)
+    var sizes = tiles.map(function (t) { var r = t.getBoundingClientRect(); return [r.width, r.height]; });
+    var unit = Math.max(1, Math.min.apply(null, sizes.map(function (z) { return z[0] || Infinity; })));
+    if (!isFinite(unit)) unit = 1;
+    var W = track.getBoundingClientRect().width || 1;
+    var spans = sizes.map(function (z) {
+      return [Math.max(1, Math.round((z[0] + gap) / (unit + gap))), Math.max(1, Math.round((z[1] + gap) / (unit / 2 + gap)))];
+    });
+    between.forEach(function (b) { b.style.display = 'contents'; });
+    track.style.display = 'grid';
+    track.style.gridAutoFlow = 'row dense';
+    track.style.gap = gap + 'px';
+    // an inner track fills the Block; the Block as its own track takes the width it is given
+    if (track !== el) track.style.width = '100%';
+    var layout = function () {
+      var w = track.getBoundingClientRect().width || W;
+      // a narrow window takes two columns at most, a phone's one or two
+      var c = w < 480 ? Math.min(cols, 2) : cols;
+      var u = (w - gap * (c - 1)) / c;
+      track.style.gridTemplateColumns = 'repeat(' + c + ', minmax(0, 1fr))';
+      track.style.gridAutoRows = Math.max(1, u / 2) + 'px';
+      tiles.forEach(function (t, i) {
+        t.style.gridColumn = 'span ' + Math.min(c, spans[i][0]);
+        t.style.gridRow = 'span ' + spans[i][1];
+        t.style.width = 'auto';
+        t.style.height = 'auto';
+        t.style.minWidth = '0';
+        t.style.minHeight = '0';
+      });
+    };
+    layout();
+    var ro = window.ResizeObserver ? new ResizeObserver(function () { layout(); }) : null;
+    if (ro) {
+      ro.observe(track);
+      offs.push(function () { ro.disconnect(); });
+    }
+    // the videos: while on screen, on hover, or always
+    var mode = s.video === 'hover' || s.video === 'always' ? s.video : 'view';
+    var vids = tiles.map(videosIn);
+    var seen = [];
+    if (!still) {
+      if (mode === 'always') vids.forEach(function (l) { l.forEach(function (v) { play(v, true); }); });
+      if (mode === 'hover')
+        tiles.forEach(function (t, i) {
+          var on = function () { vids[i].forEach(function (v) { play(v, true); }); };
+          var off = function () { vids[i].forEach(function (v) { play(v, false); }); };
+          t.addEventListener('pointerenter', on);
+          t.addEventListener('pointerleave', off);
+          offs.push(function () {
+            t.removeEventListener('pointerenter', on);
+            t.removeEventListener('pointerleave', off);
+          });
+        });
+    }
+    // tiles rise in as they arrive, a little after one another
+    var rise = !!s.reveal && !still;
+    if (rise) tiles.forEach(function (t) { t.style.opacity = '0'; });
+    if (window.IntersectionObserver && (mode === 'view' || rise)) {
+      var queue = 0;
+      var io = new IntersectionObserver(function (es) {
+        es.forEach(function (e) {
+          var i = tiles.indexOf(e.target);
+          if (mode === 'view' && !still) vids[i].forEach(function (v) { play(v, e.isIntersecting); });
+          if (rise && e.isIntersecting && !seen[i]) {
+            seen[i] = true;
+            var d = queue++ * 60;
+            window.setTimeout(function () { queue = Math.max(0, queue - 1); }, d + 50);
+            anims.push(e.target.animate([{ opacity: 0, transform: 'translateY(24px)' }, { opacity: 1, transform: 'none' }], { duration: 700, delay: d, easing: EASE, fill: 'forwards' }));
+          }
+        });
+      }, { threshold: 0.2 });
+      tiles.forEach(function (t) { io.observe(t); });
+      offs.push(function () { io.disconnect(); });
+    }
+    return function () {
+      offs.forEach(function (f) { f(); });
+      anims.forEach(function (a) { a.cancel(); });
+      vids.forEach(function (l) { l.forEach(function (v) { play(v, false); }); });
+      restore();
+    };
+  }
+
+  var KINDS = { carousel: carousel, accordion: accordion, notice: notice, ring: ring, showcase: showcase, mosaic: mosaic };
 
   // the few rules the behaviour needs, whatever page it is on: a dot not showing
   // its slide and an arrow at the end of a row that does not loop are dimmed
@@ -663,6 +1334,7 @@
     '[data-living-part="dots"] > [data-living-on="false"] { opacity: 0.35; }' +
     '[data-living-off="true"] { opacity: 0.35; cursor: default; }' +
     '[data-living-part="track"] { will-change: transform; }' +
+    '[data-living-part="tile"] img, [data-living-part="tile"] video, img[data-living-part="tile"], video[data-living-part="tile"] { width: 100%; height: 100%; object-fit: cover; }' +
     '.living-announcer { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }' +
     '@media (prefers-reduced-motion: reduce) { [data-living-part="dots"] > * { transition: none; } }';
   function addStyle(doc) {

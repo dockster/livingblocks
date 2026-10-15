@@ -1,0 +1,70 @@
+{
+  "$schema": "../schema/block.schema.json",
+  "format": 1,
+  "id": "ring",
+  "kind": "ring",
+  "label": "3D ring",
+  "hint": "Pictures standing around a ring in depth that the page's scroll turns, and people can drag. Laid flat while you edit; it stands up in Preview and on your site",
+  "category": "content",
+  "isNew": true,
+  "settings": {
+    "radius": 500,
+    "depth": 900,
+    "turn": 180,
+    "tilt": 3,
+    "light": 0.5,
+    "lean": 0.5,
+    "spin": 0,
+    "drag": true
+  },
+  "root": {
+    "type": "stack",
+    "name": "Ring",
+    "w": 960,
+    "h": 640,
+    "layout": { "direction": "column", "gap": 0, "pad": [0, 0, 0, 0], "align": "center", "justify": "center" },
+    "sizeW": "fixed",
+    "sizeH": "fixed",
+    "clip": true,
+    "children": [
+      {
+        "type": "stack",
+        "name": "Cards",
+        "part": "track",
+        "w": 2032,
+        "h": 300,
+        "layout": { "direction": "row", "gap": 16, "pad": [0, 0, 0, 0], "align": "center" },
+        "sizeW": "fit",
+        "sizeH": "fit",
+        "children": [
+          {
+            "type": "stack",
+            "name": "Card {n}",
+            "w": 240,
+            "h": 300,
+            "repeat": 8,
+            "layout": { "direction": "column", "gap": 0, "pad": [16, 16, 16, 16], "align": "start", "justify": "end" },
+            "sizeW": "fixed",
+            "sizeH": "fixed",
+            "clip": true,
+            "fill": "ink",
+            "radius": "design",
+            "children": [
+              { "type": "image", "name": "Picture", "part": "picture", "w": 240, "h": 300, "float": { "cover": true }, "shade": 0.2 },
+              {
+                "type": "text",
+                "name": "Title",
+                "w": 208,
+                "h": 22,
+                "sizeW": "fill",
+                "text": "Card {n}",
+                "ink": "on-picture",
+                "typography": { "role": "heading", "size": 17, "weight": 600 }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

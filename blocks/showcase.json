@@ -1,0 +1,261 @@
+{
+  "$schema": "../schema/block.schema.json",
+  "format": 1,
+  "id": "showcase",
+  "kind": "showcase",
+  "label": "Showreel hero",
+  "hint": "A full-screen hero of projects: a blurred picture or video behind, a sharp one in front, words revealed line by line. Swipe, arrows or keys change it; it can play on its own",
+  "category": "content",
+  "isNew": true,
+  "settings": {
+    "autoplay": true,
+    "interval": 6,
+    "transition": "blur",
+    "speed": 1.2,
+    "lines": true,
+    "blur": 0,
+    "wheel": false,
+    "loop": true,
+    "start": 0
+  },
+  "root": {
+    "type": "stack",
+    "name": "Showreel",
+    "w": 1200,
+    "h": 720,
+    "layout": {
+      "direction": "column",
+      "gap": 0,
+      "pad": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "align": "stretch"
+    },
+    "sizeW": "fill",
+    "sizeH": "fixed",
+    "clip": true,
+    "fill": "ink",
+    "children": [
+      {
+        "type": "stack",
+        "name": "Projects",
+        "part": "track",
+        "w": 3600,
+        "h": 720,
+        "layout": {
+          "direction": "row",
+          "gap": 0,
+          "pad": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "align": "stretch"
+        },
+        "sizeW": "fit",
+        "sizeH": "fill",
+        "children": [
+          {
+            "type": "stack",
+            "name": "Project {n}",
+            "w": 1200,
+            "h": 720,
+            "repeat": 3,
+            "layout": {
+              "direction": "column",
+              "gap": 12,
+              "pad": [
+                96,
+                64,
+                128,
+                64
+              ],
+              "align": "start",
+              "justify": "end"
+            },
+            "sizeW": "fixed",
+            "sizeH": "fill",
+            "clip": true,
+            "fill": "ink",
+            "children": [
+              {
+                "type": "image",
+                "name": "Backdrop",
+                "part": "picture",
+                "w": 1200,
+                "h": 720,
+                "float": {
+                  "cover": true
+                },
+                "shade": 0.35
+              },
+              {
+                "type": "stack",
+                "name": "About",
+                "w": 560,
+                "h": 200,
+                "layout": {
+                  "direction": "column",
+                  "gap": 12,
+                  "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "align": "start"
+                },
+                "sizeW": "fill",
+                "sizeH": "fit",
+                "children": [
+                  {
+                    "type": "text",
+                    "name": "Kind",
+                    "w": 560,
+                    "h": 22,
+                    "sizeW": "fill",
+                    "text": "Music video, for a client",
+                    "ink": "on-picture",
+                    "typography": {
+                      "role": "body",
+                      "size": 15,
+                      "weight": 400
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "name": "Title",
+                    "w": 560,
+                    "h": 34,
+                    "sizeW": "fill",
+                    "text": "Project {n}",
+                    "ink": "on-picture",
+                    "typography": {
+                      "role": "heading",
+                      "size": 28,
+                      "weight": 600
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "name": "Details",
+                    "w": 560,
+                    "h": 22,
+                    "sizeW": "fill",
+                    "text": "03′ 47″, 2026",
+                    "ink": "on-picture",
+                    "typography": {
+                      "role": "body",
+                      "size": 15,
+                      "weight": 400
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "stack",
+        "name": "Controls",
+        "w": 1072,
+        "h": 44,
+        "float": {
+          "left": 64,
+          "right": 64,
+          "bottom": 32
+        },
+        "layout": {
+          "direction": "row",
+          "gap": 16,
+          "pad": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "align": "center"
+        },
+        "children": [
+          {
+            "type": "text",
+            "name": "Counter",
+            "part": "counter",
+            "w": 72,
+            "h": 22,
+            "text": "01 / 03",
+            "ink": "on-picture",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 600
+            }
+          },
+          {
+            "type": "frame",
+            "name": "Progress",
+            "part": "progress",
+            "w": 744,
+            "h": 4,
+            "sizeW": "fill",
+            "sizeH": "fixed",
+            "fill": "on-picture"
+          },
+          {
+            "type": "button",
+            "name": "Pause",
+            "part": "pause",
+            "w": 76,
+            "h": 44,
+            "fill": "on-picture",
+            "ink": "ink",
+            "text": "Pause",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 600,
+              "align": "center"
+            }
+          },
+          {
+            "type": "button",
+            "name": "Previous",
+            "part": "prev",
+            "w": 44,
+            "h": 44,
+            "fill": "on-picture",
+            "ink": "ink",
+            "text": "←",
+            "typography": {
+              "role": "body",
+              "size": 17,
+              "weight": 600,
+              "align": "center"
+            }
+          },
+          {
+            "type": "button",
+            "name": "Next",
+            "part": "next",
+            "w": 44,
+            "h": 44,
+            "fill": "on-picture",
+            "ink": "ink",
+            "text": "→",
+            "typography": {
+              "role": "body",
+              "size": 17,
+              "weight": 600,
+              "align": "center"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

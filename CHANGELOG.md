@@ -1,5 +1,37 @@
 # Changelog
 
+## 0.2.0 (unreleased)
+
+- A new behaviour, `ring`, and its Block "3D ring": the track's children
+  stand around a circle in depth. The page's scroll turns it as it crosses
+  the screen, tilting a little and lighting the cards from bright to their
+  own; the scroll's speed pushes the cards out and leans them, settling on a
+  spring; it can spin on its own, and be dragged with a little inertia or
+  turned a card at a time with the arrow keys. Settings: radius, depth, turn,
+  tilt, light, lean, spin, drag. Under reduced motion it stands still facing
+  the front and turns only when asked. After Codrops' On-Scroll 3D Carousel
+  (MIT, docs/THIRD-PARTY.md), rebuilt without GSAP.
+- A drag's throw is measured over at least a frame and coasts half a turn at
+  most, so a drag delivered in two quick events cannot fling it round.
+- A new behaviour, `showcase`, and its Block "Showreel hero" (after
+  giordanobetti.com's reel, observed, no code taken): slides stacked one at a
+  time, a full-bleed picture or video behind (blurred if asked) and the
+  slide's words revealed line by line through masks; the change a fade, a
+  zoom, a blur or a wipe; Previous, Next, a counter, a progress line, the
+  arrow keys, a swipe, playing on its own (held on hover and focus, a Pause
+  button), the wheel if asked (never past the ends). Videos play while their
+  slide shows. Under reduced motion it changes at once and never plays.
+- A new behaviour, `mosaic`, and its Block "Media grid" (after au-rel.io's
+  grid, observed): a dense grid where each tile spans as many columns and
+  half-rows as its size in the design, `columns` across (two at most on a
+  narrow window), a `gap`; videos play while on screen, on hover or always;
+  tiles can rise in as they arrive.
+- Both Blocks fill their container (`sizeW: fill` on the root); the grid's
+  spans come from its narrowest tile, so they hold at any width, and its own
+  track part is optional.
+- New parts: `tile`, `counter`, `progress`.
+- livingblocks.min.js is 9.9 KB gzipped (budget 10, was 6 before the ring).
+
 ## 0.1.1 (2026-10-13)
 
 - A Banner fills what it is in. The runtime capped every Notice at

@@ -1,0 +1,254 @@
+{
+  "$schema": "../schema/block.schema.json",
+  "format": 1,
+  "id": "mosaic",
+  "kind": "mosaic",
+  "label": "Media grid",
+  "hint": "A dense grid of pictures and videos, each as wide and tall as you make it; the grid packs them together and takes fewer columns on small screens. Videos play while on screen",
+  "category": "content",
+  "isNew": true,
+  "settings": {
+    "columns": 4,
+    "gap": 4,
+    "video": "view",
+    "reveal": true
+  },
+  "root": {
+    "type": "stack",
+    "name": "Media grid",
+    "w": 980,
+    "h": 996,
+    "layout": {
+      "direction": "column",
+      "gap": 4,
+      "pad": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "align": "stretch"
+    },
+    "sizeW": "fill",
+    "sizeH": "fit",
+    "part": "track",
+    "children": [
+      {
+        "type": "stack",
+        "name": "Row 1",
+        "w": 980,
+        "h": 496,
+        "layout": {
+          "direction": "row",
+          "gap": 4,
+          "pad": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "align": "start"
+        },
+        "sizeW": "fit",
+        "sizeH": "fit",
+        "children": [
+          {
+            "type": "image",
+            "name": "Tile",
+            "part": "tile",
+            "w": 488,
+            "h": 496,
+            "sizeW": "fixed",
+            "sizeH": "fixed"
+          },
+          {
+            "type": "stack",
+            "name": "Small ones",
+            "w": 488,
+            "h": 496,
+            "layout": {
+              "direction": "column",
+              "gap": 4,
+              "pad": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "align": "start"
+            },
+            "sizeW": "fit",
+            "sizeH": "fit",
+            "children": [
+              {
+                "type": "stack",
+                "name": "Pair 1",
+                "w": 488,
+                "h": 246,
+                "layout": {
+                  "direction": "row",
+                  "gap": 4,
+                  "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "align": "start"
+                },
+                "sizeW": "fit",
+                "sizeH": "fit",
+                "children": [
+                  {
+                    "type": "image",
+                    "name": "Tile",
+                    "part": "tile",
+                    "w": 242,
+                    "h": 246,
+                    "sizeW": "fixed",
+                    "sizeH": "fixed"
+                  },
+                  {
+                    "type": "image",
+                    "name": "Tile",
+                    "part": "tile",
+                    "w": 242,
+                    "h": 246,
+                    "sizeW": "fixed",
+                    "sizeH": "fixed"
+                  }
+                ]
+              },
+              {
+                "type": "stack",
+                "name": "Pair 2",
+                "w": 488,
+                "h": 246,
+                "layout": {
+                  "direction": "row",
+                  "gap": 4,
+                  "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "align": "start"
+                },
+                "sizeW": "fit",
+                "sizeH": "fit",
+                "children": [
+                  {
+                    "type": "image",
+                    "name": "Tile",
+                    "part": "tile",
+                    "w": 242,
+                    "h": 246,
+                    "sizeW": "fixed",
+                    "sizeH": "fixed"
+                  },
+                  {
+                    "type": "image",
+                    "name": "Tile",
+                    "part": "tile",
+                    "w": 242,
+                    "h": 246,
+                    "sizeW": "fixed",
+                    "sizeH": "fixed"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "stack",
+        "name": "Row 2",
+        "w": 980,
+        "h": 246,
+        "layout": {
+          "direction": "row",
+          "gap": 4,
+          "pad": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "align": "start"
+        },
+        "sizeW": "fit",
+        "sizeH": "fit",
+        "children": [
+          {
+            "type": "image",
+            "name": "Tile",
+            "part": "tile",
+            "w": 734,
+            "h": 246,
+            "sizeW": "fixed",
+            "sizeH": "fixed"
+          },
+          {
+            "type": "image",
+            "name": "Tile",
+            "part": "tile",
+            "w": 242,
+            "h": 246,
+            "sizeW": "fixed",
+            "sizeH": "fixed"
+          }
+        ]
+      },
+      {
+        "type": "stack",
+        "name": "Row 3",
+        "w": 980,
+        "h": 246,
+        "layout": {
+          "direction": "row",
+          "gap": 4,
+          "pad": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "align": "start"
+        },
+        "sizeW": "fit",
+        "sizeH": "fit",
+        "children": [
+          {
+            "type": "image",
+            "name": "Tile",
+            "part": "tile",
+            "w": 242,
+            "h": 246,
+            "sizeW": "fixed",
+            "sizeH": "fixed"
+          },
+          {
+            "type": "image",
+            "name": "Tile",
+            "part": "tile",
+            "w": 488,
+            "h": 246,
+            "sizeW": "fixed",
+            "sizeH": "fixed"
+          },
+          {
+            "type": "image",
+            "name": "Tile",
+            "part": "tile",
+            "w": 242,
+            "h": 246,
+            "sizeW": "fixed",
+            "sizeH": "fixed"
+          }
+        ]
+      }
+    ]
+  }
+}

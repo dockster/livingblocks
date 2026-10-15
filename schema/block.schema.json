@@ -31,7 +31,10 @@
       "enum": [
         "carousel",
         "accordion",
-        "notice"
+        "notice",
+        "ring",
+        "showcase",
+        "mosaic"
       ]
     },
     "label": {
@@ -108,7 +111,10 @@
             "item",
             "header",
             "panel",
-            "icon"
+            "icon",
+            "tile",
+            "counter",
+            "progress"
           ],
           "description": "what the behaviour needs this layer for"
         },

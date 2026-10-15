@@ -14,7 +14,7 @@ const banner = `/*! livingblocks ${version} | (c) 2026 uxspot.io | MIT License |
 
 // the Blocks, checked, then gathered by behaviour (as KINDS lists them), each
 // behaviour's own Block first (its id is the kind's: carousel, then its looks)
-const KIND_ORDER = ['carousel', 'accordion', 'notice'];
+const KIND_ORDER = ['carousel', 'accordion', 'notice', 'ring', 'showcase', 'mosaic'];
 const kindOf = (f) => JSON.parse(readFileSync(`blocks/${f}`, 'utf8')).kind;
 const files = readdirSync('blocks')
   .filter((f) => f.endsWith('.json'))
@@ -66,7 +66,9 @@ if (watch) {
   execFileSync('npx', ['tsc', '-p', 'tsconfig.json'], { stdio: 'inherit' });
   // the runtime is a plain script: its declaration goes beside the ones tsc writes (global.d.ts imports it)
   copyFileSync('src/runtime.d.ts', 'dist/runtime.d.ts');
-  const BUDGET = { 'livingblocks.min.js': 6 };
+  // the ring (0.2: a ring of cards in depth turned by the scroll and a drag) takes it from 5.2 to 6.9
+  // the showcase (a hero of stacked slides with line reveals) and the mosaic (a dense media grid) take it to 9.9
+  const BUDGET = { 'livingblocks.min.js': 10 };
   let over = '';
   for (const f of ['livingblocks.mjs', 'livingblocks.js', 'livingblocks.min.js']) {
     const b = readFileSync(`dist/${f}`);

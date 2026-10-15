@@ -50,6 +50,9 @@ order as the page's CSS cascades.
 | Kind | Parts it needs | Settings |
 |---|---|---|
 | carousel | track, prev, next, dots, pause (a picture may move in depth) | perView, loop, autoplay, interval, arrows, dots, swipe, start, parallax |
+| ring | track (its children stand around a circle in depth) | radius, depth, turn, tilt, light, lean, spin, drag |
+| showcase | track (its children are slides, one shown at a time; a slide's picture is the full-bleed backdrop); prev, next, pause, counter, progress if wanted | autoplay, interval, transition (fade, zoom, blur, wipe), speed, lines, blur, wheel, loop, start |
+| mosaic | a tile part on each picture or video; track optional (the Block itself is the grid; rows between step aside). Spans come from the narrowest tile | columns, gap, video (view, hover, always), reveal |
 | accordion | item, header, panel (an icon may turn) | single, start (-1: none open) |
 | notice | dismiss (any number: a close, a Got it) | position, delay, stay (0: until closed), remember |
 
