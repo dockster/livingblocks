@@ -1,6 +1,11 @@
 # Changelog
 
-## 0.2.0 (unreleased)
+## 0.2.1
+
+- Dragging a carousel, a 3D ring or a showcase no longer starts the browser's own drag of a
+  picture in it (a ghost of the picture following the pointer).
+
+## 0.2.0
 
 - A new behaviour, `ring`, and its Block "3D ring": the track's children
   stand around a circle in depth. The page's scroll turns it as it crosses

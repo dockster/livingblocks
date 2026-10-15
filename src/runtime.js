@@ -52,6 +52,13 @@
     return null;
   }
   /** a layer that is not a button by element becomes one: role, Tab stop, Enter and Space */
+  // what a drag turns or swipes: the browser's own dragging of a picture in it does not start (a ghost of the picture)
+  function noNativeDrag(el, offs) {
+    var stop = function (e) { e.preventDefault(); };
+    el.addEventListener('dragstart', stop);
+    offs.push(function () { el.removeEventListener('dragstart', stop); });
+  }
+
   function asButton(el, label, press) {
     if (!el) return function () {};
     var native = el.tagName === 'BUTTON';
@@ -309,6 +316,7 @@
         moved = false;
       };
       track.style.touchAction = 'pan-y';
+      noNativeDrag(track, offs);
       track.addEventListener('pointerdown', down);
       window.addEventListener('pointermove', move);
       window.addEventListener('pointerup', up);
@@ -859,6 +867,7 @@
         el.addEventListener('click', swallow, { capture: true, once: true });
         window.setTimeout(function () { el.removeEventListener('click', swallow, true); }, 0);
       };
+      noNativeDrag(el, offs);
       el.addEventListener('pointerdown', down);
       el.addEventListener('pointermove', move);
       el.addEventListener('pointerup', up);
@@ -1169,6 +1178,7 @@
       x0 = null;
       if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) step(dx < 0 ? 1 : -1);
     };
+    noNativeDrag(el, offs);
     el.addEventListener('pointerdown', down);
     el.addEventListener('pointerup', up);
     el.style.touchAction = 'pan-y';
