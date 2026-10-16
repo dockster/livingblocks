@@ -233,8 +233,24 @@
       window.clearInterval(timer);
       if (playing) timer = window.setInterval(tick, Math.max(2, s.interval || 5) * 1000);
     }
+    // the word the button shows, when its only text is Pause or Play: it says what a press does next
+    var pauseWord = null;
+    if (pauseBtn) {
+      var walker = document.createTreeWalker(pauseBtn, NodeFilter.SHOW_TEXT);
+      var texts = [];
+      for (var t = walker.nextNode(); t; t = walker.nextNode()) if (t.nodeValue.trim()) texts.push(t);
+      if (texts.length === 1 && /^(pause|play)$/i.test(texts[0].nodeValue.trim())) pauseWord = texts[0];
+    }
+    var wordAs = function (word) {
+      var was = pauseWord.nodeValue.trim();
+      var cased = was === was.toUpperCase() ? word.toUpperCase() : was === was.toLowerCase() ? word.toLowerCase() : word;
+      pauseWord.nodeValue = pauseWord.nodeValue.replace(was, cased);
+    };
+    var wordAtStart = pauseWord ? pauseWord.nodeValue : null;
+    offs.push(function () { if (pauseWord && wordAtStart !== null) pauseWord.nodeValue = wordAtStart; });
     function labelPause() {
       if (!pauseBtn) return;
+      if (pauseWord) wordAs(playing ? 'Pause' : 'Play');
       pauseBtn.setAttribute('aria-label', playing ? 'Pause slides' : 'Play slides');
       pauseBtn.setAttribute('aria-pressed', playing ? 'false' : 'true');
       pauseBtn.setAttribute('data-living-on', playing ? 'true' : 'false');

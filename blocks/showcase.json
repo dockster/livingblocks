@@ -4,7 +4,7 @@
   "id": "showcase",
   "kind": "showcase",
   "label": "Showreel hero",
-  "hint": "A full-screen hero of projects: a blurred picture or video behind, a sharp one in front, words revealed line by line. Swipe, arrows or keys change it; it can play on its own",
+  "hint": "A full-screen hero of projects: a picture or video filling each slide, softened if you like, its words revealed line by line. Swipe, arrows or keys change it; it can play on its own",
   "category": "content",
   "isNew": true,
   "settings": {
