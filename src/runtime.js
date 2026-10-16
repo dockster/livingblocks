@@ -907,6 +907,142 @@
     };
   }
 
+  // ── Cylinder ──────────────────────────────────────────────────────────────
+  /**
+   * A cylinder of words: the track's children (lines of text) stand around a
+   * cylinder lying on its side, and the page's scroll turns it, so the lines
+   * roll up over the top and away (after Codrops' 3D Text Animation on
+   * Scroll, demo 1, MIT, docs/THIRD-PARTY.md; rebuilt without GSAP). It holds
+   * its place for `hold` screens of scrolling while it turns: the Block grows
+   * by that much and its track is moved down as the page scrolls (not
+   * sticky, which a clipping box around it would stop); with hold 0 it turns
+   * as it crosses the screen. The lines grow so the longest takes `fit` of
+   * the width. Under reduced motion it is left as the list it was designed as.
+   */
+  function cylinder(el, spec) {
+    var s = spec.settings || {};
+    var track = partOf(el, 'track');
+    if (!track) return null;
+    var lines = Array.prototype.slice.call(track.children);
+    var n = lines.length;
+    if (n < 2 || reduced()) return null;
+    var num = function (v, d, lo, hi) { v = typeof v === 'number' && isFinite(v) ? v : d; return Math.min(hi, Math.max(lo, v)); };
+    var share = num(s.span, 0.4, 0.1, 1);
+    var arc = num(s.arc, 180, 30, 360);
+    var from = num(s.from, -80, -180, 180);
+    var turn = num(s.turn, 350, 0, 720);
+    var hold = num(s.hold, 3, 0, 10);
+    var depth = num(s.depth, 1000, 200, 3000);
+    var fit = num(s.fit, 0.8, 0, 1);
+    var put = keepStyles([el, track].concat(lines));
+    var offs = [];
+    var doc = el.ownerDocument;
+    // the box as designed, and its lines' own type size, before anything moves
+    var W = el.offsetWidth;
+    var H = el.offsetHeight;
+    var base = lines.map(function (l) { return parseFloat(getComputedStyle(l).fontSize) || 16; });
+    var step = arc / n;
+
+    // the box that scrolls it: the nearest one that scrolls, else the window
+    var box = el.parentElement;
+    while (box && box !== doc.body) {
+      var oy = getComputedStyle(box).overflowY;
+      if ((oy === 'auto' || oy === 'scroll') && box.scrollHeight > box.clientHeight) break;
+      box = box.parentElement;
+    }
+    if (box === doc.body) box = null;
+    var view = function () {
+      if (!box) return { top: 0, h: window.innerHeight };
+      var r = box.getBoundingClientRect();
+      return { top: r.top, h: box.clientHeight };
+    };
+    // screen px to the page's own (a preview drawn smaller than its design)
+    var scale = function () { return el.getBoundingClientRect().width / (el.offsetWidth || 1) || 1; };
+
+    var holdPx = 0;
+    var place = function () {
+      var v = view();
+      var k = scale();
+      var radius = share * Math.min(W, H);
+      holdPx = hold * v.h;
+      if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
+      el.style.display = 'block';
+      el.style.height = H + holdPx / k + 'px';
+      el.style.overflow = 'clip';
+      // the eye's distance on the box, not in the track's own transform: WebKit flattens a turning
+      // preserve-3d element whose transform holds its own perspective(), and shows lines turned away
+      el.style.perspective = depth + 'px';
+      track.style.position = 'relative';
+      track.style.width = '100%';
+      track.style.height = H + 'px';
+      track.style.margin = '0';
+      track.style.padding = '0';
+      track.style.display = 'block';
+      track.style.transformStyle = 'preserve-3d';
+      track.style.transformOrigin = '50% 50%';
+      // the lines' size: the longest takes `fit` of the width, no taller than the room between two lines;
+      // a line at the front is nearer the eye by the radius, and looks larger by that much
+      var widest = 0;
+      lines.forEach(function (l, i) {
+        l.style.whiteSpace = 'nowrap';
+        l.style.fontSize = base[i] + 'px';
+        var r = doc.createRange();
+        r.selectNodeContents(l);
+        widest = Math.max(widest, r.getBoundingClientRect().width / k / base[i]);
+      });
+      var room = 2 * radius * Math.sin((step * Math.PI) / 360) * 1.1;
+      lines.forEach(function (l, i) {
+        var fs = fit && widest ? Math.min(((fit * W) / widest) * Math.max(0.2, (depth - radius) / depth), room) : base[i];
+        var a = (i * step * Math.PI) / 180;
+        l.style.position = 'absolute';
+        l.style.left = '0';
+        l.style.top = '50%';
+        l.style.width = '100%';
+        l.style.margin = '0';
+        l.style.textAlign = 'center';
+        l.style.fontSize = Math.max(base[i], fs) + 'px';
+        l.style.lineHeight = '1';
+        l.style.backfaceVisibility = 'hidden';
+        l.style.webkitBackfaceVisibility = 'hidden';
+        l.style.transform = 'translateY(-50%) translate3d(0,' + Math.sin(a) * radius + 'px,' + Math.cos(a) * radius + 'px) rotateX(' + -i * step + 'deg)';
+      });
+    };
+    var frame = 0;
+    var paint = function () {
+      frame = 0;
+      var r = el.getBoundingClientRect();
+      var v = view();
+      var k = scale();
+      var p, down = 0;
+      if (!hold) p = Math.min(1, Math.max(0, (v.top + v.h - r.top) / (v.h + H * k)));
+      else {
+        // how far past the place it holds (its middle on the middle of the screen): the track follows down by that
+        var past = v.top + Math.max(0, (v.h - H * k) / 2) - r.top;
+        down = Math.min(holdPx, Math.max(0, past));
+        p = down / holdPx;
+      }
+      // the eye stays level with the track's middle as it moves down the box
+      el.style.perspectiveOrigin = '50% ' + (down / k + H / 2) + 'px';
+      track.style.transform = 'translateY(' + down / k + 'px) rotateX(' + (from + turn * p) + 'deg)';
+    };
+    var wake = function () { if (!frame) frame = window.requestAnimationFrame(paint); };
+    var onResize = function () { W = el.offsetWidth; place(); wake(); };
+    // on the scroll itself, so the held track does not lag a frame behind the page
+    window.addEventListener('scroll', paint, true);
+    window.addEventListener('resize', onResize);
+    offs.push(function () {
+      window.removeEventListener('scroll', paint, true);
+      window.removeEventListener('resize', onResize);
+    });
+    place();
+    paint();
+    return function () {
+      window.cancelAnimationFrame(frame);
+      offs.forEach(function (f) { f(); });
+      put();
+    };
+  }
+
   /** put an element's inline style back as it was (null: none) */
   function keepStyles(list) {
     var own = list.map(function (x) { return [x, x.getAttribute('style')]; });
@@ -1335,7 +1471,7 @@
     };
   }
 
-  var KINDS = { carousel: carousel, accordion: accordion, notice: notice, ring: ring, showcase: showcase, mosaic: mosaic };
+  var KINDS = { carousel: carousel, accordion: accordion, notice: notice, ring: ring, showcase: showcase, mosaic: mosaic, cylinder: cylinder };
 
   // the few rules the behaviour needs, whatever page it is on: a dot not showing
   // its slide and an arrow at the end of a row that does not loop are dimmed

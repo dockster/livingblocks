@@ -19,7 +19,7 @@
 export const FORMAT = 1;
 
 /** The behaviours there are; each is played by the runtime. */
-export type Kind = 'carousel' | 'accordion' | 'notice' | 'ring' | 'showcase' | 'mosaic';
+export type Kind = 'carousel' | 'accordion' | 'notice' | 'ring' | 'showcase' | 'mosaic' | 'cylinder';
 
 /**
  * The parts a behaviour needs, marked on its layers. A carousel: its track of

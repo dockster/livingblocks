@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.3.0
+
+- A new behaviour, `cylinder`, and its Block "Text cylinder": the track's
+  children, lines of text, stand around a cylinder lying on its side, and
+  the page's scroll turns it so the lines roll up over the top and away. It
+  holds its place for `hold` screens of scrolling while it turns (0: it
+  turns as it crosses the screen), and the lines grow so the longest takes
+  `fit` of the width. Settings: span, arc, from, turn, hold, depth,
+  fit. Under reduced motion it stays the list it was designed as. After
+  Codrops' 3D Text Animation on Scroll, demo 1 (MIT, docs/THIRD-PARTY.md),
+  rebuilt without GSAP.
+- livingblocks.min.js 10.7 KB gzipped, budget 11 (was 10).
+
 ## 0.2.1
 
 - Dragging a carousel, a 3D ring or a showcase no longer starts the browser's own drag of a

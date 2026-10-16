@@ -8,7 +8,7 @@
 
 import { FORMAT, type Block, type Kind, type Layer, type Part } from './types.js';
 
-export const KINDS: readonly Kind[] = ['carousel', 'accordion', 'notice', 'ring', 'showcase', 'mosaic'];
+export const KINDS: readonly Kind[] = ['carousel', 'accordion', 'notice', 'ring', 'showcase', 'mosaic', 'cylinder'];
 export const PARTS: readonly Part[] = ['track', 'prev', 'next', 'dots', 'pause', 'dismiss', 'picture', 'item', 'header', 'panel', 'icon', 'tile', 'counter', 'progress'];
 const LAYER_TYPES = ['frame', 'stack', 'text', 'button', 'image', 'ellipse'];
 const COLOURS = ['accent', 'surface', 'ink', 'on-accent', 'on-picture'];
@@ -23,6 +23,7 @@ export const NEEDS: Record<Kind, Part[]> = {
   showcase: ['track'],
   // the Block itself is the grid when no layer inside is marked track
   mosaic: ['tile'],
+  cylinder: ['track'],
 };
 
 type Range = { type: 'number'; min: number; max: number } | { type: 'boolean' } | { type: 'enum'; values: string[] };
@@ -81,6 +82,19 @@ export const SETTINGS: Record<Kind, Record<string, Range>> = {
     gap: { type: 'number', min: 0, max: 48 },
     video: { type: 'enum', values: ['view', 'hover', 'always'] },
     reveal: { type: 'boolean' },
+  },
+  // lines of text around a cylinder on its side: its radius as a share of the box's smaller side (span), the degrees
+  // the lines spread over, where it starts and how far the scroll turns it (degrees), the screens of scrolling it holds
+  // its place for (0: it turns as it crosses), the eye's distance (px), the share of the width the longest line takes
+  // (fit). Named apart from the ring's radius and the carousel's start, which mean other things
+  cylinder: {
+    span: { type: 'number', min: 0.1, max: 1 },
+    arc: { type: 'number', min: 30, max: 360 },
+    from: { type: 'number', min: -180, max: 180 },
+    turn: { type: 'number', min: 0, max: 720 },
+    hold: { type: 'number', min: 0, max: 10 },
+    depth: { type: 'number', min: 200, max: 3000 },
+    fit: { type: 'number', min: 0, max: 1 },
   },
 };
 

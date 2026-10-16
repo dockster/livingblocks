@@ -130,6 +130,21 @@ test('the ring: its settings within their ranges, a track it cannot do without',
   assert.equal(validateBlock(bare).ok, false);
 });
 
+test('the text cylinder: its settings within their ranges, a track it cannot do without', () => {
+  const cyl = JSON.parse(readFileSync('blocks/cylinder.json', 'utf8'));
+  assert.deepEqual(validateBlock(cyl), { ok: true, errors: [] });
+  assert.deepEqual(NEEDS.cylinder, ['track']);
+  const wide = copy(cyl);
+  wide.settings.span = 2;
+  assert.equal(validateBlock(wide).ok, false);
+  const long = copy(cyl);
+  long.settings.hold = 20;
+  assert.equal(validateBlock(long).ok, false);
+  const bare = copy(cyl);
+  delete bare.root.children[0].part;
+  assert.equal(validateBlock(bare).ok, false);
+});
+
 test('the showcase and the mosaic: their settings within range, the parts they need', () => {
   const show = JSON.parse(readFileSync('blocks/showcase.json', 'utf8'));
   const grid = JSON.parse(readFileSync('blocks/mosaic.json', 'utf8'));

@@ -1,0 +1,54 @@
+{
+  "$schema": "../schema/block.schema.json",
+  "format": 1,
+  "id": "cylinder",
+  "kind": "cylinder",
+  "label": "Text cylinder",
+  "hint": "Lines of large text around a cylinder on its side that the page's scroll turns while it holds its place. A list while you edit; it turns in Preview and on your site",
+  "category": "content",
+  "isNew": true,
+  "settings": {
+    "span": 0.4,
+    "arc": 180,
+    "from": -80,
+    "turn": 350,
+    "hold": 3,
+    "depth": 1000,
+    "fit": 0.8
+  },
+  "root": {
+    "type": "stack",
+    "name": "Text cylinder",
+    "w": 960,
+    "h": 640,
+    "layout": { "direction": "column", "gap": 0, "pad": [0, 0, 0, 0], "align": "center", "justify": "center" },
+    "sizeW": "fill",
+    "sizeH": "fixed",
+    "clip": true,
+    "children": [
+      {
+        "type": "stack",
+        "name": "Lines",
+        "part": "track",
+        "w": 960,
+        "h": 524,
+        "layout": { "direction": "column", "gap": 8, "pad": [0, 0, 0, 0], "align": "center" },
+        "sizeW": "fill",
+        "sizeH": "fit",
+        "children": [
+          {
+            "type": "text",
+            "name": "Line {n}",
+            "w": 960,
+            "h": 36,
+            "repeat": 12,
+            "sizeW": "fill",
+            "text": "Line {n}",
+            "ink": "ink",
+            "typography": { "role": "heading", "size": 28, "weight": 800, "align": "center" }
+          }
+        ]
+      }
+    ]
+  }
+}
