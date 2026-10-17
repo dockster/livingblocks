@@ -1,6 +1,6 @@
 {
   "name": "livingblocks",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Working web components as data: carousels, accordions and notices described as layer trees with roles and settings, and a small runtime that makes them work, with a keyboard and a screen reader. No dependencies, respects reduced motion.",
   "type": "module",
   "main": "./dist/livingblocks.mjs",
@@ -62,6 +62,7 @@
   ],
   "author": "uxspot.io",
   "license": "MIT",
+  "homepage": "https://uxdeck.app/blocks",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dockster/livingblocks.git"

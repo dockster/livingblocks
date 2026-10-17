@@ -8,7 +8,11 @@ page carries the settings as attributes, and a small runtime makes the
 component work, with a keyboard and a screen reader, and with reduced motion
 respected.
 
-No dependencies. The runtime is about 3 KB gzipped.
+No dependencies. The runtime is about 11 KB gzipped.
+
+LivingBlocks is the runtime of [uxdeck](https://uxdeck.app/blocks), the design
+canvas of [uxspot.io](https://uxspot.io): the Blocks you place there work on the
+sites it publishes. See them working on [uxdeck.app/blocks](https://uxdeck.app/blocks).
 
 ## What is in it
 
