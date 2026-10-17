@@ -69,7 +69,8 @@ if (watch) {
   // the ring (0.2: a ring of cards in depth turned by the scroll and a drag) takes it from 5.2 to 6.9
   // the showcase (a hero of stacked slides with line reveals) and the mosaic (a dense media grid) take it to 9.9
   // the cylinder (0.3: lines of text turned by the scroll while held) and its Block take it to 10.7
-  const BUDGET = { 'livingblocks.min.js': 11 };
+  // 11.5 since 0.4.0 (2026-10-17): the ring's Previous, Next and Pause parts and its rest on hover and focus (WCAG 2.5.7, 2.2.2)
+  const BUDGET = { 'livingblocks.min.js': 11.5 };
   let over = '';
   for (const f of ['livingblocks.mjs', 'livingblocks.js', 'livingblocks.min.js']) {
     const b = readFileSync(`dist/${f}`);

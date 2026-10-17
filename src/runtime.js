@@ -59,6 +59,28 @@
     offs.push(function () { el.removeEventListener('dragstart', stop); });
   }
 
+  /**
+   * The word a Pause button shows, when its only text is Pause or Play: set to what a press does next, in the
+   * designer's casing. Returns the setter (a no-op when the button has other words); the word is put back on stop.
+   */
+  function pauseWordOf(btn, offs) {
+    var word = null;
+    if (btn) {
+      var walker = document.createTreeWalker(btn, NodeFilter.SHOW_TEXT);
+      var texts = [];
+      for (var t = walker.nextNode(); t; t = walker.nextNode()) if (t.nodeValue.trim()) texts.push(t);
+      if (texts.length === 1 && /^(pause|play)$/i.test(texts[0].nodeValue.trim())) word = texts[0];
+    }
+    if (!word) return function () {};
+    var atStart = word.nodeValue;
+    offs.push(function () { word.nodeValue = atStart; });
+    return function (next) {
+      var was = word.nodeValue.trim();
+      var cased = was === was.toUpperCase() ? next.toUpperCase() : was === was.toLowerCase() ? next.toLowerCase() : next;
+      word.nodeValue = word.nodeValue.replace(was, cased);
+    };
+  }
+
   function asButton(el, label, press) {
     if (!el) return function () {};
     var native = el.tagName === 'BUTTON';
@@ -233,24 +255,11 @@
       window.clearInterval(timer);
       if (playing) timer = window.setInterval(tick, Math.max(2, s.interval || 5) * 1000);
     }
-    // the word the button shows, when its only text is Pause or Play: it says what a press does next
-    var pauseWord = null;
-    if (pauseBtn) {
-      var walker = document.createTreeWalker(pauseBtn, NodeFilter.SHOW_TEXT);
-      var texts = [];
-      for (var t = walker.nextNode(); t; t = walker.nextNode()) if (t.nodeValue.trim()) texts.push(t);
-      if (texts.length === 1 && /^(pause|play)$/i.test(texts[0].nodeValue.trim())) pauseWord = texts[0];
-    }
-    var wordAs = function (word) {
-      var was = pauseWord.nodeValue.trim();
-      var cased = was === was.toUpperCase() ? word.toUpperCase() : was === was.toLowerCase() ? word.toLowerCase() : word;
-      pauseWord.nodeValue = pauseWord.nodeValue.replace(was, cased);
-    };
-    var wordAtStart = pauseWord ? pauseWord.nodeValue : null;
-    offs.push(function () { if (pauseWord && wordAtStart !== null) pauseWord.nodeValue = wordAtStart; });
+    // the word the button shows says what a press does next (pauseWordOf)
+    var wordAs = pauseWordOf(pauseBtn, offs);
     function labelPause() {
       if (!pauseBtn) return;
-      if (pauseWord) wordAs(playing ? 'Pause' : 'Play');
+      wordAs(playing ? 'Pause' : 'Play');
       pauseBtn.setAttribute('aria-label', playing ? 'Pause slides' : 'Play slides');
       pauseBtn.setAttribute('aria-pressed', playing ? 'false' : 'true');
       pauseBtn.setAttribute('data-living-on', playing ? 'true' : 'false');
@@ -802,12 +811,12 @@
       lastTop = r.top;
       var busy = false;
       if (!still) {
-        if (spinSpeed && seen && !dragging) spinTo -= spinSpeed * dt;
+        if (spinning && !held && seen && !dragging) spinTo -= spinSpeed * dt;
         busy = spring(spread, Math.min(Math.abs(speed) * 0.05 * lean, 180 * lean), dt) || busy;
         busy = spring(tip, Math.max(-20 * lean, Math.min(20 * lean, -speed * 0.006 * lean)), dt) || busy;
         var gap = spinTo - spin;
         spin += Math.abs(gap) < 0.01 ? gap : gap * (1 - Math.exp(-dt / 0.12));
-        busy = busy || Math.abs(gap) > 0.01 || (spinSpeed > 0 && seen) || dragging;
+        busy = busy || Math.abs(gap) > 0.01 || (spinning && !held && seen) || dragging;
       } else spin = spinTo;
       paint(progress(r));
       if (busy) frame = window.requestAnimationFrame(tick);
@@ -906,6 +915,56 @@
     };
     el.addEventListener('keydown', key);
     offs.push(function () { el.removeEventListener('keydown', key); });
+
+    // Previous and Next (parts prev, next): a card at a time, as the arrow keys, so it can be turned without
+    // dragging (WCAG 2.5.7). Pause (part pause) stops and restarts its own spin (WCAG 2.2.2), and the spin also
+    // rests while the pointer is over the ring or something in it has focus.
+    var turnBy = function (d) { spinTo = Math.round(spinTo / step) * step + d * step; wake(); };
+    var prevBtn = partOf(el, 'prev');
+    var nextBtn = partOf(el, 'next');
+    var pauseBtn = partOf(el, 'pause');
+    offs.push(asButton(prevBtn, 'Turn back', function () { turnBy(1); }));
+    offs.push(asButton(nextBtn, 'Turn forward', function () { turnBy(-1); }));
+    // the controls keep their place along the bottom edge once the cards stand up around them
+    var bar = [prevBtn, nextBtn, pauseBtn].filter(Boolean).map(function (b) { return b.parentElement; }).filter(function (b) { return b && b !== el && b !== track; })[0];
+    if (bar) {
+      own.push([bar, bar.getAttribute('style')]);
+      bar.style.position = 'absolute';
+      bar.style.left = '50%';
+      bar.style.bottom = '16px';
+      bar.style.transform = 'translateX(-50%)';
+      bar.style.zIndex = '2';
+    }
+    var spinning = spinSpeed > 0 && !still;
+    var held = false;
+    var wordAs = pauseWordOf(pauseBtn, offs);
+    var labelSpin = function () {
+      if (!pauseBtn) return;
+      wordAs(spinning ? 'Pause' : 'Play');
+      pauseBtn.setAttribute('aria-label', spinning ? 'Pause the ring' : 'Play the ring');
+      pauseBtn.setAttribute('data-living-on', spinning ? 'true' : 'false');
+    };
+    if (pauseBtn) {
+      // pressing Play starts it now, whatever the pointer or the focus is doing
+      if (spinSpeed > 0 && !still) offs.push(asButton(pauseBtn, null, function () { spinning = !spinning; if (spinning) held = false; labelSpin(); wake(); }));
+      else { own.push([pauseBtn, pauseBtn.getAttribute('style')]); pauseBtn.style.display = 'none'; }
+      labelSpin();
+    }
+    // keyboard focus holds it (a click's focus does not, or Play would seem to do nothing)
+    var keyFocus = function () { var a = document.activeElement; return !!a && el.contains(a) && a.matches(':focus-visible'); };
+    var hold = function (e) { if (e.type !== 'focusin' || keyFocus()) held = true; };
+    var release = function () { held = el.matches(':hover') || keyFocus(); wake(); };
+    el.addEventListener('pointerenter', hold);
+    el.addEventListener('pointerleave', release);
+    el.addEventListener('focusin', hold);
+    var later = function () { window.setTimeout(release, 0); };
+    el.addEventListener('focusout', later);
+    offs.push(function () {
+      el.removeEventListener('pointerenter', hold);
+      el.removeEventListener('pointerleave', release);
+      el.removeEventListener('focusin', hold);
+      el.removeEventListener('focusout', later);
+    });
 
     paint(progress(el.getBoundingClientRect()));
     wake();

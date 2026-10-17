@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.4.0
+
+- The ring can be turned without dragging (WCAG 2.5.7): optional parts `prev` and `next`, buttons named
+  Turn back and Turn forward, turn it a card at a time, as the arrow keys do. The "3D ring" Block has them in
+  its bottom corners.
+- A ring that spins on its own (`spin` above 0) can be stopped (WCAG 2.2.2): an optional `pause` part reads
+  Pause or Play and says so to screen readers, hidden when it does not spin; the spin also rests while the
+  pointer is over the ring or the keyboard is in it, and restarts at once when Play is pressed.
+- The carousels' dots stand 16 px apart in their Blocks (were 8), so each 8 px dot keeps a 24 px target clear
+  of the next (WCAG 2.5.8).
+- The Pause/Play word is one shared helper for the carousel and the ring.
+- livingblocks.min.js 11.3 KB gzipped, budget 11.5 (was 11).
+
 ## 0.3.0
 
 - A new behaviour, `cylinder`, and its Block "Text cylinder": the track's

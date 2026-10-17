@@ -4,7 +4,7 @@
   "id": "ring",
   "kind": "ring",
   "label": "3D ring",
-  "hint": "Pictures standing around a ring in depth that the page's scroll turns, and people can drag. Laid flat while you edit; it stands up in Preview and on your site",
+  "hint": "Pictures standing around a ring in depth that the page's scroll turns, and people can drag or turn with its buttons. Laid flat while you edit; it stands up in Preview and on your site",
   "category": "content",
   "isNew": true,
   "settings": {
@@ -22,7 +22,18 @@
     "name": "Ring",
     "w": 960,
     "h": 640,
-    "layout": { "direction": "column", "gap": 0, "pad": [0, 0, 0, 0], "align": "center", "justify": "center" },
+    "layout": {
+      "direction": "column",
+      "gap": 0,
+      "pad": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "align": "center",
+      "justify": "center"
+    },
     "sizeW": "fixed",
     "sizeH": "fixed",
     "clip": true,
@@ -33,7 +44,17 @@
         "part": "track",
         "w": 2032,
         "h": 300,
-        "layout": { "direction": "row", "gap": 16, "pad": [0, 0, 0, 0], "align": "center" },
+        "layout": {
+          "direction": "row",
+          "gap": 16,
+          "pad": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "align": "center"
+        },
         "sizeW": "fit",
         "sizeH": "fit",
         "children": [
@@ -43,14 +64,35 @@
             "w": 240,
             "h": 300,
             "repeat": 8,
-            "layout": { "direction": "column", "gap": 0, "pad": [16, 16, 16, 16], "align": "start", "justify": "end" },
+            "layout": {
+              "direction": "column",
+              "gap": 0,
+              "pad": [
+                16,
+                16,
+                16,
+                16
+              ],
+              "align": "start",
+              "justify": "end"
+            },
             "sizeW": "fixed",
             "sizeH": "fixed",
             "clip": true,
             "fill": "ink",
             "radius": "design",
             "children": [
-              { "type": "image", "name": "Picture", "part": "picture", "w": 240, "h": 300, "float": { "cover": true }, "shade": 0.2 },
+              {
+                "type": "image",
+                "name": "Picture",
+                "part": "picture",
+                "w": 240,
+                "h": 300,
+                "float": {
+                  "cover": true
+                },
+                "shade": 0.2
+              },
               {
                 "type": "text",
                 "name": "Title",
@@ -59,11 +101,79 @@
                 "sizeW": "fill",
                 "text": "Card {n}",
                 "ink": "on-picture",
-                "typography": { "role": "heading", "size": 17, "weight": 600 }
+                "typography": {
+                  "role": "heading",
+                  "size": 17,
+                  "weight": 600
+                }
               }
             ]
           }
         ]
+      },
+      {
+        "type": "button",
+        "name": "Previous",
+        "part": "prev",
+        "w": 44,
+        "h": 44,
+        "float": {
+          "left": 16,
+          "bottom": 16
+        },
+        "fill": "accent",
+        "ink": "on-accent",
+        "radius": 22,
+        "text": "\u2190",
+        "typography": {
+          "role": "body",
+          "size": 17,
+          "weight": 600,
+          "align": "center"
+        }
+      },
+      {
+        "type": "button",
+        "name": "Next",
+        "part": "next",
+        "w": 44,
+        "h": 44,
+        "float": {
+          "right": 16,
+          "bottom": 16
+        },
+        "fill": "accent",
+        "ink": "on-accent",
+        "radius": 22,
+        "text": "\u2192",
+        "typography": {
+          "role": "body",
+          "size": 17,
+          "weight": 600,
+          "align": "center"
+        }
+      },
+      {
+        "type": "button",
+        "name": "Pause",
+        "part": "pause",
+        "w": 76,
+        "h": 32,
+        "float": {
+          "right": 16,
+          "top": 16
+        },
+        "fill": "accent",
+        "ink": "on-accent",
+        "radius": 16,
+        "text": "Pause",
+        "typography": {
+          "role": "body",
+          "size": 15,
+          "weight": 600,
+          "align": "center"
+        },
+        "hidden": true
       }
     ]
   }

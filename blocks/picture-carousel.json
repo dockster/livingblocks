@@ -157,7 +157,7 @@
             "fill": "on-picture",
             "ink": "ink",
             "radius": 22,
-            "text": "←",
+            "text": "\u2190",
             "typography": {
               "role": "body",
               "size": 17,
@@ -178,7 +178,7 @@
             "fill": "on-picture",
             "ink": "ink",
             "radius": 22,
-            "text": "→",
+            "text": "\u2192",
             "typography": {
               "role": "body",
               "size": 17,
@@ -218,7 +218,7 @@
         "h": 8,
         "layout": {
           "direction": "row",
-          "gap": 8,
+          "gap": 16,
           "pad": [
             0,
             0,
