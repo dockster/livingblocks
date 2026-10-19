@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.2
+
+- An accordion panel with padding opens and closes smoothly: its padding now moves with its height. It used
+  to stop short by its padding and then jump shut (the FAQ list's answers are padded 20 px below).
+- The picture carousel's and the showcase's buttons take the surface colour with the ink on it (were the
+  on-picture colour with the ink), so they read in a dark design as well as a light one: on a dark design
+  both were near white and the arrows disappeared. The showcase's buttons are round, as the carousels' are.
+
 ## 0.4.1
 
 - The checker refuses a field the format does not have, at every level (the Block, a layer, its layout, float

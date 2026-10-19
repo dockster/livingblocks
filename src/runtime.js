@@ -388,6 +388,7 @@
   // opens to its own height and closes to none, on the house curve; with
   // `single`, opening one closes the others.
   var uid = 0;
+  var MOVE = 'height 0.45s ' + EASE + ', padding 0.45s ' + EASE;
   /** the first layer with this part inside an item, belonging to this Block */
   function partIn(scope, el, name) {
     var all = scope.querySelectorAll('[data-living-part="' + name + '"]');
@@ -432,14 +433,21 @@
         p.removeAttribute('inert');
         if (!smooth) {
           p.style.height = '';
+          p.style.paddingTop = '';
+          p.style.paddingBottom = '';
           return;
         }
+        // its padding opens with it: a panel padded below would otherwise jump by its padding
         var to = p.scrollHeight;
         p.style.transition = 'none';
         p.style.height = '0px';
+        p.style.paddingTop = '0px';
+        p.style.paddingBottom = '0px';
         void p.offsetHeight;
-        p.style.transition = 'height 0.45s ' + EASE;
+        p.style.transition = MOVE;
         p.style.height = to + 'px';
+        p.style.paddingTop = '';
+        p.style.paddingBottom = '';
         afterMove(p, function () {
           if (!r.open) return;
           p.style.transition = '';
@@ -456,12 +464,16 @@
         p.style.transition = 'none';
         p.style.height = p.scrollHeight + 'px';
         void p.offsetHeight;
-        p.style.transition = 'height 0.45s ' + EASE;
+        p.style.transition = MOVE;
         p.style.height = '0px';
+        p.style.paddingTop = '0px';
+        p.style.paddingBottom = '0px';
         afterMove(p, function () {
           if (r.open) return;
           p.style.transition = '';
           p.style.display = 'none';
+          p.style.paddingTop = '';
+          p.style.paddingBottom = '';
         });
       }
     }
@@ -502,7 +514,7 @@
     return function () {
       offs.forEach(function (f) { f(); });
       rows.forEach(function (r) {
-        ['height', 'display', 'overflow', 'transition'].forEach(function (k) { r.panel.style[k] = ''; });
+        ['height', 'display', 'overflow', 'transition', 'paddingTop', 'paddingBottom'].forEach(function (k) { r.panel.style[k] = ''; });
         r.panel.removeAttribute('inert');
         r.panel.removeAttribute('role');
         r.panel.removeAttribute('aria-labelledby');

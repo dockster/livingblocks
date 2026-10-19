@@ -154,7 +154,7 @@
               "left": 16,
               "centreY": true
             },
-            "fill": "on-picture",
+            "fill": "surface",
             "ink": "ink",
             "radius": 22,
             "text": "\u2190",
@@ -175,7 +175,7 @@
               "right": 16,
               "centreY": true
             },
-            "fill": "on-picture",
+            "fill": "surface",
             "ink": "ink",
             "radius": 22,
             "text": "\u2192",
@@ -196,7 +196,7 @@
               "right": 16,
               "top": 16
             },
-            "fill": "on-picture",
+            "fill": "surface",
             "ink": "ink",
             "radius": 16,
             "text": "Pause",

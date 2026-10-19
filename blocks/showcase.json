@@ -212,7 +212,7 @@
             "part": "pause",
             "w": 76,
             "h": 44,
-            "fill": "on-picture",
+            "fill": "surface",
             "ink": "ink",
             "text": "Pause",
             "typography": {
@@ -220,7 +220,8 @@
               "size": 15,
               "weight": 600,
               "align": "center"
-            }
+            },
+            "radius": 22
           },
           {
             "type": "button",
@@ -228,7 +229,7 @@
             "part": "prev",
             "w": 44,
             "h": 44,
-            "fill": "on-picture",
+            "fill": "surface",
             "ink": "ink",
             "text": "←",
             "typography": {
@@ -236,7 +237,8 @@
               "size": 17,
               "weight": 600,
               "align": "center"
-            }
+            },
+            "radius": 22
           },
           {
             "type": "button",
@@ -244,7 +246,7 @@
             "part": "next",
             "w": 44,
             "h": 44,
-            "fill": "on-picture",
+            "fill": "surface",
             "ink": "ink",
             "text": "→",
             "typography": {
@@ -252,7 +254,8 @@
               "size": 17,
               "weight": 600,
               "align": "center"
-            }
+            },
+            "radius": 22
           }
         ]
       }
