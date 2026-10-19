@@ -12,7 +12,8 @@ No dependencies. The runtime is about 11 KB gzipped.
 
 LivingBlocks is the runtime of [uxdeck](https://uxdeck.app/blocks), the design
 canvas of [uxspot.io](https://uxspot.io): the Blocks you place there work on the
-sites it publishes. See them working on [uxdeck.app/blocks](https://uxdeck.app/blocks).
+sites it publishes. Every behaviour, its settings and the checker are on
+[uxdeck.app/livingblocks](https://uxdeck.app/livingblocks).
 
 ## What is in it
 

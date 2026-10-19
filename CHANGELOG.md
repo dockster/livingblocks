@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.1
+
+- The checker refuses a field the format does not have, at every level (the Block, a layer, its layout, float
+  and typography), as the schema already did (`additionalProperties: false`): `script: not a field a Block has`.
+  Nothing in a Block ever ran, but a contributed Block with a `script` or an `onclick` used to pass, for a
+  reviewer to notice by eye. Every shipped Block passes.
+- The package's homepage is https://uxdeck.app/livingblocks, the page of every behaviour, its settings and the
+  checker.
+
 ## 0.4.0
 
 - The ring can be turned without dragging (WCAG 2.5.7): optional parts `prev` and `next`, buttons named

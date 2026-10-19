@@ -13,6 +13,14 @@ export const PARTS: readonly Part[] = ['track', 'prev', 'next', 'dots', 'pause',
 const LAYER_TYPES = ['frame', 'stack', 'text', 'button', 'image', 'ellipse'];
 const COLOURS = ['accent', 'surface', 'ink', 'on-accent', 'on-picture'];
 const SIZING = ['fixed', 'fit', 'fill'];
+// the fields each object may have, as schema/block.schema.json says (additionalProperties: false): a field the format
+// does not have is refused, never carried. Nothing in a Block runs, but a checker that let unknown fields through
+// would pass a Block whose `script` or `onclick` a reviewer then has to notice by eye
+const BLOCK_FIELDS = ['$schema', 'format', 'id', 'kind', 'label', 'hint', 'category', 'isNew', 'author', 'settings', 'root'];
+const LAYER_FIELDS = ['type', 'name', 'part', 'w', 'h', 'layout', 'sizeW', 'sizeH', 'float', 'clip', 'fill', 'ink', 'shade', 'radius', 'text', 'typography', 'hidden', 'repeat', 'children', 'raised', 'contain'];
+const LAYOUT_FIELDS = ['direction', 'gap', 'pad', 'align', 'justify'];
+const FLOAT_FIELDS = ['left', 'right', 'top', 'bottom', 'centreX', 'centreY', 'cover'];
+const TYPE_FIELDS = ['role', 'size', 'weight', 'align'];
 
 /** The parts each behaviour cannot work without. */
 export const NEEDS: Record<Kind, Part[]> = {
@@ -124,6 +132,12 @@ export function validateBlock(value: unknown): Verdict {
   const say = (where: string, what: string) => errors.push(`${where}: ${what}`);
   if (!value || typeof value !== 'object' || Array.isArray(value)) return { ok: false, errors: ['not an object'] };
   const b = value as Partial<Block>;
+  /** every field of `o` the format does not have, said once each */
+  const only = (o: unknown, allowed: string[], where: string) => {
+    if (!o || typeof o !== 'object' || Array.isArray(o)) return;
+    for (const k of Object.keys(o)) if (!allowed.includes(k)) say(where ? `${where}.${k}` : k, 'not a field a Block has');
+  };
+  only(b, BLOCK_FIELDS, '');
 
   if (b.format !== FORMAT) say('format', `must be ${FORMAT}`);
   if (typeof b.id !== 'string' || !/^[a-z][a-z0-9-]{1,40}$/.test(b.id)) say('id', 'lower case letters, digits and dashes, 2 to 41 long, starting with a letter');
@@ -154,6 +168,10 @@ export function validateBlock(value: unknown): Verdict {
     if (!l || typeof l !== 'object') return say(path, 'a layer');
     const x = l as Partial<Layer>;
     const here = `${path}/${typeof x.name === 'string' ? x.name : '?'}`;
+    only(x, LAYER_FIELDS, here);
+    only(x.layout, LAYOUT_FIELDS, `${here} layout`);
+    only(x.float, FLOAT_FIELDS, `${here} float`);
+    only(x.typography, TYPE_FIELDS, `${here} typography`);
     count += Math.max(1, Number(x.repeat) || 1);
     if (depth > MAX_DEPTH) return say(here, `deeper than ${MAX_DEPTH} layers`);
     if (!LAYER_TYPES.includes(x.type as string)) say(here, `type one of ${LAYER_TYPES.join(', ')}`);

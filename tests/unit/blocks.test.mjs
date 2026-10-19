@@ -41,6 +41,21 @@ test('auto layout throughout: a container without a layout is refused', () => {
   assert.match(v.errors.join('\n'), /needs a layout \(auto layout throughout\)/);
 });
 
+test('a field the format does not have is refused, at every level, as the schema does', () => {
+  const b = copy(carousel);
+  b.script = 'alert(1)';
+  b.root.onclick = 'go()';
+  b.root.layout.css = 'x';
+  const v = validateBlock(b);
+  assert.equal(v.ok, false);
+  const said = v.errors.join('\n');
+  assert.match(said, /^script: not a field a Block has$/m);
+  assert.match(said, /onclick: not a field a Block has/);
+  assert.match(said, /layout\.css: not a field a Block has/);
+  // every Block shipped has only the format's fields
+  for (const blk of BLOCKS) assert.deepEqual(validateBlock(blk).errors.filter((e) => e.includes('not a field')), [], blk.id);
+});
+
 test('spacing off the 4 pt scale is refused', () => {
   const b = copy(carousel);
   b.root.layout.gap = 18;
