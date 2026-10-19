@@ -5,3 +5,5 @@ src/registry.generated.ts
 # notes for Claude Code: kept off GitHub (owner, 2026-10-13)
 CLAUDE.md
 CLAUDE.local.md
+# licence notes on other projects' code, checked before work starts: kept off GitHub (as in scrollwork)
+docs/CANDIDATES.md
