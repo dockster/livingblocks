@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.3
+
+- Escape closes only the latest notice on show. It used to close every notice on the page at once, each for
+  good, however far the focus was from them.
+- Under reduced motion a showcase does not play on its own, so its pause part is hidden; it used to show
+  "Pause", and pressing it started the autoplay the visitor had asked not to have.
+- The package description names every kind of Block: rings, showcases, grids and text cylinders too.
+
 ## 0.4.2
 
 - An accordion panel with padding opens and closes smoothly: its padding now moves with its height. It used

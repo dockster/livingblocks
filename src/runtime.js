@@ -556,6 +556,8 @@
     for (var i = 0; i < text.length; i++) h = ((h << 5) + h + text.charCodeAt(i)) | 0;
     return (h >>> 0).toString(36);
   }
+  /** the notices on show, the latest last: Escape closes only the latest, not every notice on the page */
+  var openNotices = [];
   function notice(el, spec, options) {
     var s = spec.settings || {};
     var doc = el.ownerDocument || document;
@@ -611,6 +613,7 @@
     function show() {
       if (shown) return;
       shown = true;
+      openNotices.push(el);
       el.style.display = '';
       moveTo(false, false);
       void el.offsetHeight;
@@ -622,6 +625,7 @@
     function hide(byVisitor) {
       if (!shown) return;
       shown = false;
+      openNotices = openNotices.filter(function (n) { return n !== el; });
       window.clearTimeout(stayTimer);
       // the focus was in it: it goes to the page, not nowhere
       if (el.contains(doc.activeElement) && doc.activeElement.blur) doc.activeElement.blur();
@@ -682,7 +686,7 @@
     });
     // Escape, unless something else took it first (a dialog closing)
     var escape = function (e) {
-      if (e.key !== 'Escape' || !shown || e.defaultPrevented) return;
+      if (e.key !== 'Escape' || !shown || e.defaultPrevented || openNotices[openNotices.length - 1] !== el) return;
       hide(true);
     };
     doc.addEventListener('keydown', escape);
@@ -694,6 +698,7 @@
       timers.forEach(function (t) { window.clearTimeout(t); });
       window.clearTimeout(stayTimer);
       offs.forEach(function (f) { f(); });
+      openNotices = openNotices.filter(function (n) { return n !== el; });
       ['display', 'opacity', 'transform', 'transition', 'maxWidth'].forEach(function (k) { el.style[k] = ''; });
       el.removeAttribute('data-living-on');
     };
@@ -1361,8 +1366,9 @@
       restartTimer();
     };
     if (pauseBtn) {
-      pauseBtn.style.display = s.autoplay ? '' : 'none';
-      offs.push(asButton(pauseBtn, 'Pause', function () {
+      // under reduced motion it never plays on its own, so there is nothing to pause
+      pauseBtn.style.display = playing ? '' : 'none';
+      offs.push(asButton(pauseBtn, playing ? 'Pause' : 'Play', function () {
         playing = !playing;
         pauseBtn.setAttribute('aria-label', playing ? 'Pause' : 'Play');
         pauseBtn.setAttribute('data-living-on', playing ? 'false' : 'true');
