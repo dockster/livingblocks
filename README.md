@@ -56,8 +56,8 @@ order as the page's CSS cascades.
 |---|---|---|
 | carousel | track, prev, next, dots, pause (a picture may move in depth) | perView, loop, autoplay, interval, arrows, dots, swipe, start, parallax |
 | ring | track (its children stand around a circle in depth); optional prev, next (turn a card), pause (stops its spin) | radius, depth, turn, tilt, light, lean, spin, drag |
-| showcase | track (its children are slides, one shown at a time; a slide's picture is the full-bleed backdrop); prev, next, pause, counter, progress if wanted | autoplay, interval, transition (fade, zoom, blur, wipe), speed, lines, blur, wheel, loop, start |
-| mosaic | a tile part on each picture or video; track optional (the Block itself is the grid; rows between step aside). Spans come from the narrowest tile | columns, gap, video (view, hover, always), reveal |
+| showcase (the Showreel) | track (its children are slides, one shown at a time; a slide's picture is the full-bleed backdrop); prev, next, pause, counter, progress if wanted | autoplay, interval, transition (fade, zoom, blur, wipe), speed, lines, blur, wheel, loop, start |
+| mosaic (the Media grid) | a tile part on each picture or video; track optional (the Block itself is the grid; rows between step aside). Spans come from the narrowest tile | columns, gap, video (view, hover, always), reveal |
 | cylinder | track (its children, lines of text, stand around a cylinder on its side) | span (radius, a share of the smaller side), arc, from, turn, hold (screens), depth, fit (share of the width the longest line takes) |
 | accordion | item, header, panel (an icon may turn) | single, start (-1: none open) |
 | notice | dismiss (any number: a close, a Got it) | position, delay, stay (0: until closed), remember |
