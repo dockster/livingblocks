@@ -1564,7 +1564,288 @@
     };
   }
 
-  var KINDS = { carousel: carousel, accordion: accordion, notice: notice, ring: ring, showcase: showcase, mosaic: mosaic, cylinder: cylinder };
+  // ── Form ──────────────────────────────────────────────────────────────────
+  // Each field part (data-living-field: its type, name, whether it must be filled, its choices) gets a real control
+  // in its input part, whose words become the placeholder; its label part names it. The submit part sends it: the
+  // answers are checked here (each wrong one says why, the first takes the focus), then posted to the page's own
+  // address (options.formEndpoint, else /__uxdeck/form), where the host relays them. A field no person fills (a
+  // trap for bots) and the time the page opened go with them. After sending, the status part shows its own words
+  // (as drawn) or settings.sentText, or the page goes to settings.redirect; a failure says settings.failText. Every
+  // message shows in the status part (settings.show 'helper') or in a toast at the foot of the page ('toast'), its
+  // colours the form's own turned round (its words on its surface become a surface of its words).
+  // options.formPreview: checked, then acted out as settings.preview says ('sent' or 'failed'), never sent (a design
+  // tool's preview); options.toastIn: the element its toast sits in (positioned), else the page. options.formOff: a page with nowhere to send to (an export) says so.
+  var NOTE = {
+    need: 'Please fill in ',
+    email: 'Enter an email address, like name@example.com.',
+    tel: 'Enter a phone number.',
+    fail: 'Your message could not be sent. Please try again.',
+    closed: 'This form is not taking messages right now.',
+    off: 'This form sends from a site published with uxdeck.'
+  };
+  // Cloudflare's Turnstile, loaded once for every form on the page when the host hands a site key with its token
+  var turnstileLoad = null;
+  function loadTurnstile(doc) {
+    if (window.turnstile) return Promise.resolve(window.turnstile);
+    if (!turnstileLoad) {
+      turnstileLoad = new Promise(function (res, rej) {
+        window.livingTurnstileReady = function () { res(window.turnstile); };
+        var sc = doc.createElement('script');
+        sc.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=livingTurnstileReady';
+        sc.async = true;
+        sc.onerror = rej;
+        doc.head.appendChild(sc);
+      });
+    }
+    return turnstileLoad;
+  }
+  function form(el, spec, options) {
+    var s = spec.settings || {};
+    var doc = el.ownerDocument || document;
+    var offs = [];
+    var mine = function (n) { return n.closest('[data-living]') === el; };
+    var status = partOf(el, 'status');
+    var submit = partOf(el, 'submit');
+    var sent = status ? status.textContent : '';
+    var fields = [];
+    var all = el.querySelectorAll('[data-living-part="field"]');
+    for (var i = 0; i < all.length; i++) {
+      if (!mine(all[i])) continue;
+      var box = all[i].querySelector('[data-living-part="input"]');
+      var lab = all[i].querySelector('[data-living-part="label"]');
+      if (!box) continue;
+      var cfg = {};
+      try { cfg = JSON.parse(all[i].getAttribute('data-living-field') || '{}') || {}; } catch (e) { cfg = {}; }
+      var label = lab ? lab.textContent.trim() : '';
+      var type = cfg.type || 'text';
+      var c = /^(INPUT|TEXTAREA|SELECT)$/.test(box.tagName) ? box : null;
+      var made = !c;
+      var hid = [];
+      if (made) {
+        c = doc.createElement(type === 'long' ? 'textarea' : type === 'choice' ? 'select' : 'input');
+        if (type === 'choice') {
+          [''].concat(cfg.options || []).forEach(function (o) {
+            var op = doc.createElement('option');
+            op.value = o;
+            op.textContent = o || box.textContent.trim();
+            c.appendChild(op);
+          });
+        } else if (type !== 'long') c.type = type === 'checkbox' ? 'checkbox' : type === 'email' ? 'email' : type === 'tel' ? 'tel' : 'text';
+        if (type !== 'choice' && type !== 'checkbox') c.placeholder = box.textContent.trim();
+        // a control takes no font from the page: it takes the drawn placeholder's (its type, size, weight, spacing and
+        // colour for the placeholder) and the label's colour for what is typed, read before the drawing is hidden
+        var drawn = null;
+        for (var d = box.firstElementChild; d && !drawn; d = d.nextElementSibling) if (d.textContent.trim()) drawn = d;
+        if (drawn) {
+          var ds = getComputedStyle(drawn);
+          c.style.fontFamily = ds.fontFamily;
+          c.style.fontSize = ds.fontSize;
+          c.style.fontWeight = ds.fontWeight;
+          c.style.letterSpacing = ds.letterSpacing;
+          c.style.setProperty('--living-placeholder', ds.color);
+        }
+        if (lab) c.style.color = getComputedStyle(lab).color;
+        for (var k = box.firstChild; k; k = k.nextSibling) if (k.nodeType === 1) { hid.push([k, k.style.display]); k.style.display = 'none'; } else if (k.nodeType === 3) { hid.push([k, k.nodeValue]); k.nodeValue = ''; }
+        c.className = 'living-control';
+        box.appendChild(c);
+      }
+      c.name = cfg.name || label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'field-' + (fields.length + 1);
+      if (cfg.required) { c.required = true; c.setAttribute('aria-required', 'true'); }
+      var auto = { name: 'name', email: 'email', tel: 'tel' }[c.name] || { email: 'email', tel: 'tel' }[type];
+      if (auto) c.setAttribute('autocomplete', auto);
+      if (lab) {
+        if (!lab.id) lab.id = 'living-' + Math.random().toString(36).slice(2, 9);
+        c.setAttribute('aria-labelledby', lab.id);
+        var focus = function (ctl) { return function () { ctl.focus(); }; }(c);
+        lab.addEventListener('click', focus);
+        offs.push(function (l, f) { return function () { l.removeEventListener('click', f); }; }(lab, focus));
+      }
+      fields.push({ el: all[i], box: box, c: c, made: made, hid: hid, type: type, label: label || c.name, required: !!cfg.required });
+    }
+    if (!fields.length || !submit) return null;
+    // the trap: a field out of sight that people never fill and bots do
+    var trap = doc.createElement('input');
+    trap.name = 'website';
+    trap.tabIndex = -1;
+    trap.autocomplete = 'off';
+    trap.setAttribute('aria-hidden', 'true');
+    trap.className = 'living-trap';
+    el.appendChild(trap);
+    var opened = Date.now();
+    // the host's token, asked for as the form starts: it says when the page was opened, so a form sent at once
+    // (a bot) can be told from one a person filled
+    var endpoint = options.formEndpoint || '/__uxdeck/form';
+    var token = '';
+    // Turnstile: a box it may show a check in (most visitors never see it), and the pass it gives at sending
+    var cf = null;
+    var cfBox = null;
+    var waitPass = null;
+    var challenge = function (key) {
+      if (cf || !/^[\w-]{10,80}$/.test(key)) return;
+      cf = {};
+      loadTurnstile(doc).then(function (t) {
+        cfBox = doc.createElement('div');
+        cfBox.className = 'living-turnstile';
+        el.appendChild(cfBox);
+        var done = function (v) { if (waitPass) { waitPass(v); waitPass = null; } };
+        cf.id = t.render(cfBox, { sitekey: key, appearance: 'interaction-only', execution: 'execute', callback: done, 'error-callback': function () { done(''); } });
+      }, function () {});
+    };
+    var pass = function () {
+      return new Promise(function (res) {
+        if (!cf || cf.id === undefined || !window.turnstile) return res('');
+        waitPass = res;
+        try { window.turnstile.reset(cf.id); window.turnstile.execute(cf.id); } catch (e) { res(''); }
+        setTimeout(function () { if (waitPass === res) { waitPass = null; res(''); } }, 20000);
+      });
+    };
+    var fetchToken = function () {
+      if (options.formPreview || options.formOff || !window.fetch) return;
+      window.fetch(endpoint, { credentials: 'same-origin' }).then(function (r) { return r.json(); }).then(function (b) { token = (b && b.t) || ''; if (b && typeof b.ts === 'string') challenge(b.ts); }, function () {});
+    };
+    fetchToken();
+    if (status) {
+      status.setAttribute('role', 'status');
+      status.setAttribute('aria-live', 'polite');
+      status.hidden = true;
+    }
+    var sentText = (typeof s.sentText === 'string' && s.sentText.trim()) || sent;
+    var failText = (typeof s.failText === 'string' && s.failText.trim()) || NOTE.fail;
+    var toastEl = null;
+    var toastTimer = 0;
+    var toast = function (state, words) {
+      if (!toastEl) {
+        toastEl = doc.createElement('div');
+        toastEl.className = 'living-toast';
+        toastEl.setAttribute('role', 'status');
+        // options.toastIn: a box of the host's own (a design tool's preview screen) holds it instead of the page
+        if (options.toastIn) toastEl.classList.add('is-inside');
+        (options.toastIn || doc.body).appendChild(toastEl);
+      }
+      // the form's colours turned round: its words become the toast, its surface the toast's words
+      var cs = getComputedStyle(el);
+      var bg = cs.backgroundColor;
+      var clear = !bg || bg === 'transparent' || /rgba\([^)]*,\s*0\)$/.test(bg);
+      toastEl.style.setProperty('--living-toast-bg', cs.color || '#1d1d1f');
+      toastEl.style.setProperty('--living-toast-ink', clear ? '#ffffff' : bg);
+      toastEl.setAttribute('aria-live', state === 'error' || state === 'closed' ? 'assertive' : 'polite');
+      toastEl.setAttribute('data-living-state', state);
+      toastEl.textContent = words;
+      toastEl.classList.remove('is-multiline');
+      // a toast that wraps takes softer corners than a pill
+      if (toastEl.offsetHeight > 56) toastEl.classList.add('is-multiline');
+      toastEl.classList.add('is-on');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () { if (toastEl) toastEl.classList.remove('is-on'); }, 4500);
+    };
+    var say = function (state, words) {
+      el.setAttribute('data-living-state', state);
+      if (s.show === 'toast') return toast(state, words);
+      if (!status) return;
+      status.hidden = false;
+      status.textContent = words;
+    };
+    var clearFields = function () {
+      fields.forEach(function (f) { if (f.type === 'checkbox') f.c.checked = false; else f.c.value = ''; });
+    };
+    var wrong = function (f) {
+      var v = f.type === 'checkbox' ? (f.c.checked ? 'yes' : '') : f.c.value.trim();
+      if (!v) return f.required ? NOTE.need + f.label.toLowerCase().replace(/[*:]+$/, '').trim() + '.' : '';
+      if (f.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) return NOTE.email;
+      if (f.type === 'tel' && !/^[+()\d][\d\s().+-]{5,24}$/.test(v)) return NOTE.tel;
+      return '';
+    };
+    var busy = false;
+    var send = function () {
+      if (busy) return;
+      var first = null;
+      var words = '';
+      fields.forEach(function (f) {
+        var w = wrong(f);
+        f.c.setAttribute('aria-invalid', w ? 'true' : 'false');
+        f.el.setAttribute('data-living-invalid', w ? 'true' : 'false');
+        if (w && !first) { first = f; words = w; }
+      });
+      if (first) {
+        say('error', words);
+        first.c.focus();
+        return;
+      }
+      if (options.formOff) return say('off', NOTE.off);
+      // Preview acts it out as the published form would, without sending: the outcome the designer chose to see
+      if (options.formPreview) {
+        if (s.preview === 'failed') return say('error', failText);
+        clearFields();
+        return say('sent', sentText);
+      }
+      var answers = {};
+      var labels = {};
+      fields.forEach(function (f) {
+        answers[f.c.name] = f.type === 'checkbox' ? (f.c.checked ? 'yes' : 'no') : f.c.value.trim();
+        labels[f.c.name] = f.label;
+      });
+      busy = true;
+      el.setAttribute('data-living-state', 'sending');
+      submit.setAttribute('aria-busy', 'true');
+      pass().then(function (c) {
+        return window.fetch(endpoint, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ form: el.getAttribute('data-living-form') || '', to: s.to || 'account', fields: answers, labels: labels, website: trap.value, t: token, at: opened, cf: c })
+        });
+      }).then(function (r) {
+        return r.json().catch(function () { return {}; }).then(function (b) { return { ok: r.ok && b.ok, closed: r.status === 429 || b.closed }; });
+      }, function () { return {}; }).then(function (r) {
+        busy = false;
+        submit.removeAttribute('aria-busy');
+        if (r.closed) return say('closed', NOTE.closed);
+        // a token too old (a tab left open for days) is asked for again, so trying again can work
+        if (!r.ok) { fetchToken(); return say('error', failText); }
+        if (s.after === 'redirect' && /^(\/(?!\/)\S*|https:\/\/\S+)$/.test(s.redirect || '')) return window.location.assign(s.redirect);
+        clearFields();
+        say('sent', sentText);
+      });
+    };
+    offs.push(asButton(submit, null, send));
+    var onKey = function (e) {
+      if (e.key === 'Enter' && e.target.tagName === 'INPUT' && e.target !== trap) {
+        e.preventDefault();
+        send();
+      }
+    };
+    var onSubmit = function (e) {
+      e.preventDefault();
+      send();
+    };
+    el.addEventListener('keydown', onKey);
+    el.addEventListener('submit', onSubmit);
+    if (el.tagName === 'FORM') el.noValidate = true;
+    return function () {
+      el.removeEventListener('keydown', onKey);
+      el.removeEventListener('submit', onSubmit);
+      offs.forEach(function (f) { f(); });
+      trap.remove();
+      if (cf && cf.id !== undefined && window.turnstile) try { window.turnstile.remove(cf.id); } catch (e) {}
+      if (cfBox) cfBox.remove();
+      clearTimeout(toastTimer);
+      if (toastEl) toastEl.remove();
+      el.removeAttribute('data-living-state');
+      fields.forEach(function (f) {
+        f.el.removeAttribute('data-living-invalid');
+        if (!f.made) return;
+        f.c.remove();
+        f.hid.forEach(function (h) { if (h[0].nodeType === 1) h[0].style.display = h[1]; else h[0].nodeValue = h[1]; });
+      });
+      if (status) {
+        status.hidden = false;
+        status.textContent = sent;
+        status.removeAttribute('role');
+        status.removeAttribute('aria-live');
+      }
+    };
+  }
+
+  var KINDS = { carousel: carousel, accordion: accordion, notice: notice, ring: ring, showcase: showcase, mosaic: mosaic, cylinder: cylinder, form: form };
 
   // the few rules the behaviour needs, whatever page it is on: a dot not showing
   // its slide and an arrow at the end of a row that does not loop are dimmed
@@ -1574,6 +1855,21 @@
     '[data-living-off="true"] { opacity: 0.35; cursor: default; }' +
     '[data-living-part="track"] { will-change: transform; }' +
     '[data-living-part="tile"] img, [data-living-part="tile"] video, img[data-living-part="tile"], video[data-living-part="tile"] { width: 100%; height: 100%; object-fit: cover; }' +
+    '.living-control { box-sizing: border-box; width: 100%; height: 100%; min-height: 24px; margin: 0; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; resize: none; }' +
+    '.living-control::placeholder { color: var(--living-placeholder, inherit); opacity: 1; }' +
+    'input[type="checkbox"].living-control { width: 20px; height: 20px; accent-color: currentColor; }' +
+    '.living-control:focus { outline: none; }' +
+    '[data-living-part="input"]:focus-within { outline: 2px solid currentColor; outline-offset: 2px; }' +
+    '[data-living-invalid="true"] [data-living-part="input"] { outline: 2px solid #B42318; outline-offset: 2px; }' +
+    // a status part is hidden until a message is sent, whatever display its own CSS gives it (a text aligned to the middle)
+    '[data-living-part="status"][hidden] { display: none !important; }' +
+    '.living-trap { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }' +
+    '[data-living-state="sending"] [data-living-part="submit"] { opacity: 0.7; cursor: progress; }' +
+    '.living-toast { position: fixed; left: 50%; bottom: 24px; z-index: 2147483000; box-sizing: border-box; max-width: min(560px, calc(100% - 32px)); padding: 12px 20px; border-radius: 999px; background: var(--living-toast-bg, #1d1d1f); color: var(--living-toast-ink, #fff); font-size: 15px; line-height: 1.4; box-shadow: 0 12px 32px rgba(0,0,0,.2); opacity: 0; transform: translate(-50%, 8px); transition: .3s cubic-bezier(.87,0,.13,1); transition-property: opacity, transform; pointer-events: none; }' +
+    '.living-toast.is-multiline { border-radius: 12px; }' +
+    '.living-toast.is-inside { position: absolute; }' +
+    '.living-toast.is-on { opacity: 1; transform: translate(-50%, 0); }' +
+    '@media (prefers-reduced-motion: reduce) { .living-toast { transition: none; } }' +
     '.living-announcer { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }' +
     '@media (prefers-reduced-motion: reduce) { [data-living-part="dots"] > * { transition: none; } }';
   function addStyle(doc) {
@@ -1587,6 +1883,9 @@
   /**
    * options.remember: false keeps a notice from being remembered once
    * dismissed (a design tool's preview, where it should show every time).
+   * options.formEndpoint: where a form posts (else /__uxdeck/form on the page's
+   * own address); options.formPreview: a form is checked, never sent;
+   * options.formOff: a page with nowhere to send to (an export) says so.
    */
   function start(root, options) {
     options = options || {};

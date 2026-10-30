@@ -19,7 +19,7 @@
 export const FORMAT = 1;
 
 /** The behaviours there are; each is played by the runtime. */
-export type Kind = 'carousel' | 'accordion' | 'notice' | 'ring' | 'showcase' | 'mosaic' | 'cylinder';
+export type Kind = 'carousel' | 'accordion' | 'notice' | 'ring' | 'showcase' | 'mosaic' | 'cylinder' | 'form';
 
 /**
  * The parts a behaviour needs, marked on its layers. A carousel: its track of
@@ -29,15 +29,18 @@ export type Kind = 'carousel' | 'accordion' | 'notice' | 'ring' | 'showcase' | '
  */
 /**
  * A showcase: its counter (01 / 05) and its progress line. A mosaic: each tile.
+ * A form: each field (its label and the box typed in, whose words are the
+ * placeholder), the button that sends it, and where its messages show.
  */
-export type Part = 'track' | 'prev' | 'next' | 'dots' | 'pause' | 'dismiss' | 'picture' | 'item' | 'header' | 'panel' | 'icon' | 'tile' | 'counter' | 'progress';
+export type Part = 'track' | 'prev' | 'next' | 'dots' | 'pause' | 'dismiss' | 'picture' | 'item' | 'header' | 'panel' | 'icon' | 'tile' | 'counter' | 'progress' | 'field' | 'label' | 'input' | 'submit' | 'status';
 
 /**
  * Colours by role, read from the design the Block lands in: its accent (the
  * colour its buttons are), the surface its cards are, its ink; the words on
  * the accent; white words over a picture.
  */
-export type Colour = 'accent' | 'surface' | 'ink' | 'on-accent' | 'on-picture';
+/** `field`: a box on a surface (a form's text box), the surface a shade toward the ink */
+export type Colour = 'accent' | 'surface' | 'field' | 'edge' | 'ink' | 'on-accent' | 'on-picture';
 
 /** Text by role: the design's heading or body text style, else these sizes. */
 export interface Typography {
@@ -71,6 +74,18 @@ export interface Layout {
 
 export type LayerType = 'frame' | 'stack' | 'text' | 'button' | 'image' | 'ellipse';
 
+/**
+ * A form's field, on the layer marked `field`: what is typed in it, the name its answer is sent under (from its
+ * label when left out), whether it must be filled, the choices of a choice field. Only these kinds of answer: a
+ * form never asks for a password, a card or a code (validate.ts FORBIDDEN).
+ */
+export interface Field {
+  type: 'text' | 'email' | 'tel' | 'long' | 'choice' | 'checkbox';
+  name?: string;
+  required?: boolean;
+  options?: string[];
+}
+
 export interface Layer {
   type: LayerType;
   /** `{n}` is the number of the nearest repeated layer: Slide 2's title says Picture 2 */
@@ -86,6 +101,8 @@ export interface Layer {
   float?: Float;
   clip?: boolean;
   fill?: Colour;
+  /** a 1px border inside the box (`edge`: a text box's outline, readable at 3:1 on its surface) */
+  stroke?: Colour;
   /** a colour laid over a picture, so the words on it read (0 to 1) */
   shade?: number;
   ink?: Colour;
@@ -100,6 +117,8 @@ export interface Layer {
   hidden?: boolean;
   /** the layer is made this many times (1 to 12) */
   repeat?: number;
+  /** a form's field: on the layer marked `field` */
+  field?: Field;
   children?: Layer[];
 }
 

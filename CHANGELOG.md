@@ -1,5 +1,46 @@
 # Changelog
 
+## 0.6.0
+
+- A form asks its visitor for Cloudflare Turnstile's pass when its host hands a site key with the page's token (`ts`):
+  Turnstile is loaded once for the page, invisible unless it needs the visitor to act, and its pass goes with the
+  message (`cf`). Hosts that hand no key are unchanged.
+- A form's controls take the drawn placeholder's font (family, size, weight, spacing) and colour for the placeholder,
+  and the label's colour for what is typed: a published form no longer falls back to the browser's serif.
+- A layer can have a `stroke`: a 1px line inside its box, in a colour role. A new role, `edge`, is the surface shaded
+  toward the ink until it reads at 3:1 on it. The Contact form's three boxes use it, so their outline passes non-text
+  contrast (WCAG 1.4.11) where the `field` fill alone did not.
+
+## 0.5.1
+
+- A form's messages show where its settings say: `show` 'helper' (its status part, as before) or 'toast' (at the foot
+  of the page, in the form's own colours turned round, read out politely, a wrong answer urgently). `sentText` and
+  `failText` are the words of a sent and a failed message (empty: the status part's own words, and the built-in
+  failure).
+- `options.formPreview` acts the form out as published: answers checked, then the outcome `preview` names ('sent' or
+  'failed') shown as it would be, nothing sent and no token asked for. `options.toastIn` puts the toast in an element
+  of the host's own (a preview's screen) instead of the page.
+- The Contact form's message after sending is hidden as drawn: a design tool shows the form as a visitor first sees
+  it; the runtime shows the message once a message is sent.
+
+## 0.5.0
+
+- A new behaviour, `form`, and its Block, the Contact form (name, email, message). Each field part says what it
+  asks for (`field`: text, email, tel, long, choice or checkbox; its name; whether it must be filled; a choice's
+  options), and the runtime puts a real, labelled control in its `input` part, whose words become the placeholder.
+  Answers are checked before anything is sent, each wrong one saying why and the first taking the focus; a good
+  form is posted as JSON to the page's own address (`/__uxdeck/form`, or `options.formEndpoint`) with a field no
+  person fills, the time the page opened and the host's token, asked for as the form starts (a GET to the same
+  address) and again after a failed send. The `status` part shows its own words after sending, or the page goes
+  to `settings.redirect` (on the same site, or https). A failure keeps what was typed; a host that stops taking
+  messages (429) is said so. `options.formPreview` checks and never sends; `options.formOff` says the form sends
+  only from a published site.
+- A new colour role, `field`: a box on a surface (a form's text box), the surface a shade toward the ink, so it
+  shows on a light card and on a dark one. The Contact form sits on a `surface` and its boxes are `field`.
+- A form never asks for a password, a card, a security or one-time code or an account number: the checker refuses
+  such a field by its type, name, label or placeholder (`asksForSecret`), so a Block cannot be a page for phishing.
+- New category: Forms. The runtime is 13.5 KB gzipped; its budget is 14 (was 11.5).
+
 ## 0.4.3
 
 - Escape closes only the latest notice on show. It used to close every notice on the page at once, each for

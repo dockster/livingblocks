@@ -1,0 +1,330 @@
+{
+  "$schema": "../schema/block.schema.json",
+  "format": 1,
+  "id": "form",
+  "kind": "form",
+  "label": "Contact form",
+  "hint": "A form whose messages reach your inbox: name, email and message, checked as they are typed",
+  "category": "forms",
+  "isNew": true,
+  "settings": {
+    "after": "message",
+    "to": "account",
+    "show": "helper",
+    "preview": "sent"
+  },
+  "root": {
+    "type": "stack",
+    "name": "Contact form",
+    "w": 440,
+    "h": 520,
+    "layout": {
+      "direction": "column",
+      "gap": 20,
+      "pad": [
+        40,
+        40,
+        40,
+        40
+      ],
+      "align": "stretch"
+    },
+    "sizeW": "fixed",
+    "sizeH": "fit",
+    "fill": "surface",
+    "radius": "design",
+    "children": [
+      {
+        "type": "text",
+        "name": "Title",
+        "w": 360,
+        "h": 36,
+        "sizeW": "fill",
+        "text": "Get in touch",
+        "ink": "ink",
+        "typography": {
+          "role": "heading",
+          "size": 28,
+          "weight": 600
+        }
+      },
+      {
+        "type": "stack",
+        "name": "Name",
+        "part": "field",
+        "field": {
+          "type": "text",
+          "name": "name",
+          "required": true
+        },
+        "w": 360,
+        "h": 80,
+        "layout": {
+          "direction": "column",
+          "gap": 8,
+          "pad": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "align": "stretch"
+        },
+        "sizeW": "fill",
+        "sizeH": "fit",
+        "children": [
+          {
+            "type": "text",
+            "name": "Name label",
+            "w": 360,
+            "h": 24,
+            "sizeW": "fill",
+            "text": "Name",
+            "ink": "ink",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 600
+            },
+            "part": "label"
+          },
+          {
+            "type": "stack",
+            "name": "Name box",
+            "part": "input",
+            "w": 360,
+            "h": 48,
+            "layout": {
+              "direction": "row",
+              "gap": 0,
+              "pad": [
+                12,
+                16,
+                12,
+                16
+              ],
+              "align": "start"
+            },
+            "sizeW": "fill",
+            "sizeH": "fixed",
+            "fill": "field",
+            "stroke": "edge",
+            "radius": "design",
+            "children": [
+              {
+                "type": "text",
+                "name": "Name placeholder",
+                "w": 328,
+                "h": 24,
+                "sizeW": "fill",
+                "text": "Your name",
+                "ink": "ink",
+                "typography": {
+                  "role": "body",
+                  "size": 15,
+                  "weight": 400
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "stack",
+        "name": "Email",
+        "part": "field",
+        "field": {
+          "type": "email",
+          "name": "email",
+          "required": true
+        },
+        "w": 360,
+        "h": 80,
+        "layout": {
+          "direction": "column",
+          "gap": 8,
+          "pad": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "align": "stretch"
+        },
+        "sizeW": "fill",
+        "sizeH": "fit",
+        "children": [
+          {
+            "type": "text",
+            "name": "Email label",
+            "w": 360,
+            "h": 24,
+            "sizeW": "fill",
+            "text": "Email",
+            "ink": "ink",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 600
+            },
+            "part": "label"
+          },
+          {
+            "type": "stack",
+            "name": "Email box",
+            "part": "input",
+            "w": 360,
+            "h": 48,
+            "layout": {
+              "direction": "row",
+              "gap": 0,
+              "pad": [
+                12,
+                16,
+                12,
+                16
+              ],
+              "align": "start"
+            },
+            "sizeW": "fill",
+            "sizeH": "fixed",
+            "fill": "field",
+            "stroke": "edge",
+            "radius": "design",
+            "children": [
+              {
+                "type": "text",
+                "name": "Email placeholder",
+                "w": 328,
+                "h": 24,
+                "sizeW": "fill",
+                "text": "you@example.com",
+                "ink": "ink",
+                "typography": {
+                  "role": "body",
+                  "size": 15,
+                  "weight": 400
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "stack",
+        "name": "Message",
+        "part": "field",
+        "field": {
+          "type": "long",
+          "name": "message",
+          "required": true
+        },
+        "w": 360,
+        "h": 152,
+        "layout": {
+          "direction": "column",
+          "gap": 8,
+          "pad": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "align": "stretch"
+        },
+        "sizeW": "fill",
+        "sizeH": "fit",
+        "children": [
+          {
+            "type": "text",
+            "name": "Message label",
+            "w": 360,
+            "h": 24,
+            "sizeW": "fill",
+            "text": "Message",
+            "ink": "ink",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 600
+            },
+            "part": "label"
+          },
+          {
+            "type": "stack",
+            "name": "Message box",
+            "part": "input",
+            "w": 360,
+            "h": 120,
+            "layout": {
+              "direction": "row",
+              "gap": 0,
+              "pad": [
+                12,
+                16,
+                12,
+                16
+              ],
+              "align": "start"
+            },
+            "sizeW": "fill",
+            "sizeH": "fixed",
+            "fill": "field",
+            "stroke": "edge",
+            "radius": "design",
+            "children": [
+              {
+                "type": "text",
+                "name": "Message placeholder",
+                "w": 328,
+                "h": 24,
+                "sizeW": "fill",
+                "text": "What would you like to say?",
+                "ink": "ink",
+                "typography": {
+                  "role": "body",
+                  "size": 15,
+                  "weight": 400
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "button",
+        "name": "Send",
+        "part": "submit",
+        "w": 360,
+        "h": 48,
+        "sizeW": "fill",
+        "fill": "accent",
+        "ink": "on-accent",
+        "radius": "design",
+        "text": "Send message",
+        "typography": {
+          "role": "body",
+          "size": 15,
+          "weight": 600,
+          "align": "center"
+        }
+      },
+      {
+        "type": "text",
+        "name": "Sent",
+        "w": 360,
+        "h": 24,
+        "sizeW": "fill",
+        "text": "Thanks, your message is on its way.",
+        "ink": "ink",
+        "typography": {
+          "role": "body",
+          "size": 15,
+          "weight": 400
+        },
+        "part": "status",
+        "hidden": true
+      }
+    ]
+  }
+}

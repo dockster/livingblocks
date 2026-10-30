@@ -180,3 +180,68 @@ test('the showcase and the mosaic: their settings within range, the parts they n
   video.settings.video = 'never';
   assert.equal(validateBlock(video).ok, false);
 });
+
+// ── forms (0.5.0) ──
+import { asksForSecret, SETTINGS } from '../../dist/livingblocks.mjs';
+const contact = JSON.parse(readFileSync('blocks/form.json', 'utf8'));
+const firstField = (b) => b.root.children.find((c) => c.part === 'field');
+
+test('a form needs its fields, an input, a submit and a status', () => {
+  const b = copy(contact);
+  b.root.children = b.root.children.filter((c) => c.part !== 'status');
+  const v = validateBlock(b);
+  assert.equal(v.ok, false);
+  assert.ok(v.errors.some((e) => /needs a layer marked status/.test(e)), v.errors.join('; '));
+});
+
+test('a field asks only for what a form may: no other type, no password, card or code', () => {
+  for (const [type, ok] of [['email', true], ['long', true], ['password', false], ['file', false]]) {
+    const b = copy(contact);
+    firstField(b).field.type = type;
+    assert.equal(validateBlock(b).ok, ok, type);
+  }
+  for (const name of ['password', 'card_number', 'cvv', 'otp', 'iban', 'pin', 'mot-de-passe', 'cardNumber', 'Security code']) {
+    const b = copy(contact);
+    firstField(b).field.name = name.toLowerCase().replace(/[^a-z0-9_-]+/g, '-');
+    firstField(b).name = name;
+    assert.equal(validateBlock(b).ok, false, name);
+  }
+  for (const words of ['Your password', 'Card number', 'One-time code']) {
+    const b = copy(contact);
+    firstField(b).children[0].text = words;
+    assert.equal(validateBlock(b).ok, false, words);
+  }
+  for (const fine of ['Passenger name', 'Company', 'Postcard wishes', 'Your message', 'Spinach']) assert.equal(asksForSecret(fine), false, fine);
+});
+
+test('a field: only on a field part, a name once, choices only on a choice', () => {
+  const b = copy(contact);
+  b.root.children[0].field = { type: 'text' };
+  assert.equal(validateBlock(b).ok, false);
+  const twice = copy(contact);
+  const fs = twice.root.children.filter((c) => c.part === 'field');
+  fs[1].field.name = fs[0].field.name;
+  assert.ok(validateBlock(twice).errors.some((e) => /used twice/.test(e)));
+  const choice = copy(contact);
+  firstField(choice).field = { type: 'choice' };
+  assert.equal(validateBlock(choice).ok, false);
+  firstField(choice).field = { type: 'choice', options: ['Design', 'Build'] };
+  assert.equal(validateBlock(choice).ok, true, validateBlock(choice).errors.join('; '));
+  const opts = copy(contact);
+  firstField(opts).field.options = ['x'];
+  assert.equal(validateBlock(opts).ok, false);
+  const unknown = copy(contact);
+  firstField(unknown).field.onsubmit = 'x';
+  assert.equal(validateBlock(unknown).ok, false);
+});
+
+test('a form’s settings: a redirect on this site or https, and a recipient by id, never an address', () => {
+  assert.ok(SETTINGS.form.to && SETTINGS.form.redirect && SETTINGS.form.after);
+  const ok = (settings) => validateBlock({ ...copy(contact), settings }).ok;
+  assert.equal(ok({ after: 'redirect', redirect: '/thanks' }), true);
+  assert.equal(ok({ after: 'redirect', redirect: 'https://example.com/thanks' }), true);
+  for (const bad of ['//evil.com', 'javascript:alert(1)', 'http://example.com', 'data:text/html,x']) assert.equal(ok({ redirect: bad }), false, bad);
+  assert.equal(ok({ to: 'account' }), true);
+  assert.equal(ok({ to: 'a'.repeat(24) }), true);
+  assert.equal(ok({ to: 'me@example.com' }), false);
+});

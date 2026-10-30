@@ -35,7 +35,8 @@
         "ring",
         "showcase",
         "mosaic",
-        "cylinder"
+        "cylinder",
+        "form"
       ]
     },
     "label": {
@@ -115,7 +116,12 @@
             "icon",
             "tile",
             "counter",
-            "progress"
+            "progress",
+            "field",
+            "label",
+            "input",
+            "submit",
+            "status"
           ],
           "description": "what the behaviour needs this layer for"
         },
@@ -227,15 +233,31 @@
           "enum": [
             "accent",
             "surface",
+            "field",
+            "edge",
             "ink",
             "on-accent",
             "on-picture"
           ]
         },
+        "stroke": {
+          "enum": [
+            "accent",
+            "surface",
+            "field",
+            "edge",
+            "ink",
+            "on-accent",
+            "on-picture"
+          ],
+          "description": "a 1px border inside the box (edge: a text box\u2019s outline, readable at 3:1 on its surface)"
+        },
         "ink": {
           "enum": [
             "accent",
             "surface",
+            "field",
+            "edge",
             "ink",
             "on-accent",
             "on-picture"
@@ -317,6 +339,43 @@
         "contain": {
           "type": "boolean",
           "description": "a picture shown whole, never cropped (a logo); else it covers its box"
+        },
+        "field": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type"
+          ],
+          "description": "a form's field, on the layer marked field: what is typed in it, the name its answer is sent under, whether it must be filled, the choices of a choice field",
+          "properties": {
+            "type": {
+              "enum": [
+                "text",
+                "email",
+                "tel",
+                "long",
+                "choice",
+                "checkbox"
+              ]
+            },
+            "name": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_-]{0,39}$"
+            },
+            "required": {
+              "type": "boolean"
+            },
+            "options": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 12,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60
+              }
+            }
+          }
         }
       }
     }

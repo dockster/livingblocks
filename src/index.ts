@@ -6,7 +6,7 @@ import { BLOCKS } from './registry.generated.js';
 import type { Block } from './types.js';
 
 export * from './types.js';
-export { validateBlock, KINDS, PARTS, NEEDS, SETTINGS, TYPE_SCALE, type Verdict } from './validate.js';
+export { validateBlock, KINDS, PARTS, NEEDS, SETTINGS, TYPE_SCALE, FIELD_TYPES, FIELD_NAME, FORBIDDEN, asksForSecret, type Verdict } from './validate.js';
 export { CATEGORIES, type Category } from './categories.js';
 export { BLOCKS };
 
@@ -18,8 +18,10 @@ export interface LivingBlocksRuntime {
   /**
    * start every Block under root, and those added later; returns a function that stops them all.
    * `remember: false` shows a notice every time, even once dismissed (a design tool's preview).
+   * `formEndpoint`: where a form posts (else /__uxdeck/form on the page's own address); `formPreview`: a form is
+   * checked, never sent; `formOff`: a page with nowhere to send to (an export) says so.
    */
-  start: (root: Element, options?: { remember?: boolean }) => () => void;
+  start: (root: Element, options?: { remember?: boolean; formEndpoint?: string; formPreview?: boolean; formOff?: boolean; toastIn?: HTMLElement }) => () => void;
   version: string;
 }
 
