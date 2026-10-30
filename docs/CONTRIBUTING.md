@@ -23,8 +23,9 @@ saying why. A Block:
    of 4;
 5. uses only the **settings its behaviour reads**, within their ranges;
 6. takes its colours and text by **role**, so it arrives in the style of the
-   design it lands in: colours `accent`, `surface`, `ink`, `on-accent` and
-   `on-picture`, text `heading` and `body`. Colours go in pairs: words on an
+   design it lands in: colours `accent`, `surface`, `ink`, `on-accent`,
+   `on-picture`, `field` (a text box) and `edge` (its outline, 3:1 on its
+   surface), text `heading` and `body`. Colours go in pairs: words on an
    `accent` fill are `on-accent`, words on a `surface` fill are `ink`, and
    `on-picture` is for words over a picture, not for a fill behind words;
 7. sets its words in the **Blocks' type scale** (15, 17, 28): several Blocks

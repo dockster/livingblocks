@@ -1,6 +1,6 @@
 # livingblocks
 
-Working web components as data. A carousel, an accordion or a notice is
+Working web components as data. A carousel, an accordion, a notice or a form is
 described as a tree of layers with roles (the colours and text styles of
 whatever design it lands in), its behaviour's settings, and the parts that
 behaviour needs. A design tool draws the tree in the design's own style; a
@@ -8,7 +8,7 @@ page carries the settings as attributes, and a small runtime makes the
 component work, with a keyboard and a screen reader, and with reduced motion
 respected.
 
-No dependencies. The runtime is about 11 KB gzipped.
+No dependencies. The runtime is about 15 KB gzipped.
 
 LivingBlocks is the runtime of [uxdeck](https://uxdeck.app/blocks), the design
 canvas of [uxspot.io](https://uxspot.io): the Blocks you place there work on the
@@ -61,6 +61,7 @@ order as the page's CSS cascades.
 | cylinder | track (its children, lines of text, stand around a cylinder on its side) | span (radius, a share of the smaller side), arc, from, turn, hold (screens), depth, fit (share of the width the longest line takes) |
 | accordion | item, header, panel (an icon may turn) | single, start (-1: none open) |
 | notice | dismiss (any number: a close, a Got it) | position, delay, stay (0: until closed), remember |
+| form | field (each with `data-living-field`: type text, email, tel, long, choice or checkbox, name, required, options), label, input, submit, status | after (message, redirect), redirect, to, show (helper, toast), sentText, failText, preview (sent, failed) |
 
 A notice's place on the window is the page's own CSS (a design tool pins it
 there); the runtime brings it in after `delay`, takes it away on a dismiss part,
@@ -69,6 +70,44 @@ reads its words out politely without taking the focus, and with `remember`
 keeps it away for that visitor (localStorage, keyed by its words) until its
 words change. `LivingBlocks.start(root, { remember: false })` shows it every
 time, for a design tool's preview. It is not a cookie consent.
+
+## Forms
+
+A form's `input` parts become real controls (an `input`, a `textarea` or a
+`select`) that take the drawn placeholder's font and colour; answers are
+checked as they are typed, and a field no person fills catches bots. The form
+sends to its host, not to a mail service of its own:
+
+- `GET <endpoint>` answers `{ "t": "<token>" }`, and `"ts": "<site key>"` when
+  the host wants a [Cloudflare Turnstile](https://developers.cloudflare.com/turnstile/)
+  pass: the runtime then loads Turnstile once, invisibly unless it needs the
+  visitor, and sends its pass as `cf`.
+- `POST <endpoint>` (JSON) sends `{ form, to, fields, labels, website, t, at, cf }`
+  and expects `{ "ok": true }`; `{ "closed": true }` or a 429 says the form is
+  not taking messages, anything else that it failed.
+
+The endpoint is `options.formEndpoint`, else `/__uxdeck/form` on the page's own
+address, where uxdeck's published sites relay the message to the owner's
+confirmed address. A form never asks for passwords, card numbers or codes: the
+checker refuses such a field.
+
+```js
+LivingBlocks.start(document.body, { formEndpoint: '/api/contact' }); // your own endpoint
+LivingBlocks.start(preview, { formPreview: true, toastIn: preview }); // a design tool's preview: checked, acted out, never sent
+LivingBlocks.start(page, { formOff: true });                          // an export with nowhere to send to: says so
+```
+
+`settings.to` names the address by an id the host knows (`account`, or 24 hex
+characters), never the address itself, so a page never shows where its
+messages go.
+
+## Colours
+
+A Block names roles, never colours, so it arrives in the design it lands in:
+`accent`, `surface`, `ink`, `on-accent` and `on-picture`, plus `field` (a text
+box: the surface a shade toward the ink) and `edge` (its outline: the surface
+toward the ink until it reads at 3:1 on it). A layer's `fill` and `ink` take a
+role, and so does its `stroke`, a 1px line inside its box.
 
 The behaviours are a fixed, reviewed set: a Block is data and never brings
 code of its own (docs/CONTRIBUTING.md).
