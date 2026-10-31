@@ -118,6 +118,16 @@ const held = await p.evaluate(() => Math.round(document.querySelector('[data-liv
 check('scrolled sideways, the first column stays at the left edge', held === 0, String(held));
 await p.context().close();
 
+// a phone, rows with a left padding: the held column keeps its margin, the strip before it painted over
+p = await open(`${table({ sort: -1, pageSize: 0, pin: true })}<style>.row { padding-left: 24px; }</style>`, { viewport: { width: 390, height: 800 } });
+await p.evaluate(() => { document.getElementById('grid').scrollLeft = 120; });
+const margin = await p.evaluate(() => {
+  const c = document.querySelector('[data-living-part="row"] [data-living-part="cell"]');
+  return { left: Math.round(c.getBoundingClientRect().left - document.getElementById('grid').getBoundingClientRect().left), shadow: c.style.boxShadow };
+});
+check('scrolled sideways, a padded row\'s first column stays 24px in, the strip before it covered', margin.left === 24 && /-24px 0px 0px 0px/.test(margin.shadow), JSON.stringify(margin));
+await p.context().close();
+
 // ── the chart ──
 p = await open(chart({ type: 'line', data: DATA, prefix: '$', format: 'number', draw: 'once' }));
 const sr = await p.evaluate(() => { const t = document.querySelector('table.living-sr'); return t ? { caption: t.caption?.textContent, rows: t.rows.length, head: [...t.rows[0].cells].map((c) => c.textContent).join(','), mar: [...t.rows[3].cells].map((c) => c.textContent).join(',') } : null; });

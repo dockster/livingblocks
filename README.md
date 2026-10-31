@@ -27,6 +27,8 @@ sites it publishes. Every behaviour, its settings and the checker are on
   runtime (and before `start`) only by pages that hold one; it registers them with `LivingBlocks.register`.
 - `parseData`, `formatValue`, `geometry` and their kin (ES module): a chart's data read as a spreadsheet copies it,
   and where its points, lines and bars stand, for a design tool drawing it.
+- `sortOrder`, `cellValue` and `compareCells` (ES module): how a table's column sorts by its kind, so a design tool can
+  draw the rows in the order a visitor first sees them.
 
 ## On a page
 

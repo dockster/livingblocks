@@ -5,7 +5,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
-import { blockById, dataText, formatValue, geometry, parseData, readNumber, summarise, validateBlock, NEEDS } from '../../dist/livingblocks.mjs';
+import { blockById, dataText, formatValue, geometry, parseData, readNumber, sortOrder, summarise, validateBlock, NEEDS } from '../../dist/livingblocks.mjs';
 
 const copy = (o) => structuredClone(o);
 
@@ -128,4 +128,11 @@ test('the add-on loads after the runtime and registers the table and the chart',
   runInNewContext(readFileSync('dist/livingblocks.min.js', 'utf8'), { window: w });
   assert.equal(typeof w.LivingBlocks.register, 'function');
   assert.equal(typeof w.LivingBlocks.kit.partOf, 'function');
+});
+
+test('a column sorts by its kind; equal rows keep their order, empty cells stay last', () => {
+  assert.deepEqual(sortOrder(['$20.00', '$192.00', '', '$1,200.00'], 'money', 'desc'), [3, 1, 0, 2]);
+  assert.deepEqual(sortOrder(['$20.00', '$192.00', '', '$1,200.00'], 'money', 'asc'), [0, 1, 3, 2]);
+  assert.deepEqual(sortOrder(['Oct 18, 2026, 19:34', 'Oct 18, 2026, 15:40', 'Oct 17, 2026, 09:12', 'Oct 19, 2026, 10:05'], 'date', 'desc'), [3, 0, 1, 2]);
+  assert.deepEqual(sortOrder(['b', 'A', 'a', 'item 10', 'item 9'], 'text', 'asc'), [1, 2, 0, 4, 3]);
 });

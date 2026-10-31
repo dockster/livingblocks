@@ -8,6 +8,7 @@ import type { Block } from './types.js';
 export * from './types.js';
 export { validateBlock, KINDS, PARTS, NEEDS, SETTINGS, TYPE_SCALE, FIELD_TYPES, FIELD_NAME, FORBIDDEN, asksForSecret, COLUMN_KINDS, TONES, DATA_MAX, type Verdict } from './validate.js';
 export { CATEGORIES, type Category } from './categories.js';
+export { cellValue, compareCells, sortOrder, type SortValue } from './tableSort.js';
 export { parseData, dataText, readNumber, formatValue, summarise, geometry, niceUp, MAX_POINTS, MAX_SERIES, type ChartData, type Series, type Geometry, type Point, type Bar, type Shape, type Format } from './chartData.js';
 export { BLOCKS };
 

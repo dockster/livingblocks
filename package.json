@@ -1,6 +1,6 @@
 {
   "name": "livingblocks",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Working web components as data: carousels, accordions, rings, showcases, grids, text cylinders, notices, forms, tables and charts described as layer trees with roles and settings, and a small runtime that makes them work, with a keyboard and a screen reader. No dependencies, respects reduced motion.",
   "type": "module",
   "main": "./dist/livingblocks.mjs",

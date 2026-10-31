@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.1
+
+- `table`: a first column held on a narrow screen keeps the row's left padding, the strip before it painted in the
+  row's colour, so its words no longer touch the edge (its offset is also `--living-pin-left`, for pages whose own
+  rules set `left`).
+- `sortOrder`, `cellValue` and `compareCells` exported: the way a column sorts by its kind, so a design tool can draw a
+  table in the order a visitor first sees it. The runtime sorts with the same code.
+
 ## 0.7.0
 
 - Two Blocks for data, in a new Data group, played by an add-on of their own (`livingblocks/dashboard`,

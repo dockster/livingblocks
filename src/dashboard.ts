@@ -13,7 +13,8 @@
 // draws in as it comes into view, drops the axis labels that would overlap, and carries its data as a table read by
 // screen readers.
 
-import { formatValue, geometry, parseData, readNumber, type ChartData } from './chartData.js';
+import { formatValue, geometry, parseData, type ChartData } from './chartData.js';
+import { sortOrder } from './tableSort.js';
 
 type Kit = {
   partOf: (el: Element, name: string) => HTMLElement | null;
@@ -60,7 +61,7 @@ type Runtime = { register: (kind: string, run: (el: HTMLElement, spec: Spec) => 
     '[data-living-part="column"][data-living-sort] { cursor: pointer; user-select: none; }' +
     '[data-living-part="column"][data-living-sort]:focus-visible { outline: 2px solid currentColor; outline-offset: -2px; }' +
     '[data-living-part="icon"] { transition: transform 0.3s ' + EASE + ', opacity 0.2s ' + EASE + '; }' +
-    '[data-living-pinned] { position: sticky; left: 0; z-index: 1; }' +
+    '[data-living-pinned] { position: sticky; left: var(--living-pin-left, 0); z-index: 1; }' +
     '.living-search { box-sizing: border-box; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; }' +
     '.living-search::placeholder { color: var(--living-placeholder, inherit); opacity: 1; }' +
     '.living-search:focus { outline: none; }' +
@@ -98,24 +99,6 @@ type Runtime = { register: (kind: string, run: (el: HTMLElement, spec: Spec) => 
 
   // ── Table ─────────────────────────────────────────────────────────────────
   type Column = { kind: string; sort?: boolean; min?: number; phone?: boolean };
-  const valueOf = (cell: HTMLElement | undefined, kind: string): number | string | null => {
-    const t = (cell?.textContent ?? '').trim();
-    if (!t) return null;
-    if (kind === 'number' || kind === 'money' || kind === 'percent') return readNumber(t);
-    if (kind === 'date') {
-      const d = Date.parse(t.replace(/(\d{1,2}),\s*(\d{4}),\s*/, '$1 $2 '));
-      return Number.isFinite(d) ? d : t.toLowerCase();
-    }
-    return t.toLowerCase();
-  };
-  const compare = (a: number | string | null, b: number | string | null) => {
-    if (a === null && b === null) return 0;
-    if (a === null) return 1;
-    if (b === null) return -1;
-    if (typeof a === 'number' && typeof b === 'number') return a - b;
-    return String(a).localeCompare(String(b), undefined, { numeric: true, sensitivity: 'base' });
-  };
-
   function table(el: HTMLElement, spec: Spec): () => void {
     const s = spec.settings;
     const doc = el.ownerDocument;
@@ -192,14 +175,7 @@ type Runtime = { register: (kind: string, run: (el: HTMLElement, spec: Spec) => 
       if (sortBy < 0) rows = drawnOrder.slice();
       else {
         const kind = config[sortBy]?.kind ?? 'text';
-        const keyed = drawnOrder.map((r, i) => ({ r, i, v: valueOf(cellsOf(r)[sortBy], kind) }));
-        keyed.sort((a, b) => {
-          const c = compare(a.v, b.v);
-          // empty cells stay last whichever way it runs
-          if (a.v === null || b.v === null) return c || a.i - b.i;
-          return (dir === 'asc' ? c : -c) || a.i - b.i;
-        });
-        rows = keyed.map((k) => k.r);
+        rows = sortOrder(drawnOrder.map((r) => cellsOf(r)[sortBy]?.textContent ?? ''), kind, dir).map((i) => drawnOrder[i]);
       }
       for (const r of rows) body.appendChild(r);
     };
@@ -345,17 +321,24 @@ type Runtime = { register: (kind: string, run: (el: HTMLElement, spec: Spec) => 
         if (!c) continue;
         // inline: a page's own class rules (a cell placed relative) would win over a rule of ours
         if (pin) {
+          // held where the row's padding puts it, the strip before it painted over, so its words keep their margin
+          const bg = behind(r, el) || behind(el, el) || '#fff';
+          const pad = parseFloat(getComputedStyle(r).paddingLeft) || 0;
           c.setAttribute('data-living-pinned', '');
+          c.style.setProperty('--living-pin-left', `${pad}px`);
           c.style.position = 'sticky';
-          c.style.left = '0';
+          c.style.left = `${pad}px`;
           c.style.zIndex = '1';
-          c.style.backgroundColor = behind(r, el) || behind(el, el) || '#fff';
+          c.style.backgroundColor = bg;
+          c.style.boxShadow = pad ? `-${pad}px 0 0 0 ${bg}` : '';
         } else {
           c.removeAttribute('data-living-pinned');
+          c.style.removeProperty('--living-pin-left');
           c.style.position = '';
           c.style.left = '';
           c.style.zIndex = '';
           c.style.backgroundColor = '';
+          c.style.boxShadow = '';
         }
       }
     };
