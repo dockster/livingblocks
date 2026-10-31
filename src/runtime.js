@@ -1887,6 +1887,8 @@
    * own address); options.formPreview: a form is checked, never sent;
    * options.formOff: a page with nowhere to send to (an export) says so.
    */
+  // every start() running, so a behaviour registered later (an add-on: livingblocks.dashboard) starts its Blocks too
+  var scanners = [];
   function start(root, options) {
     options = options || {};
     addStyle(root.ownerDocument || document);
@@ -1926,6 +1928,7 @@
       });
     });
     scan();
+    scanners.push(scan);
     watch.observe(root, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-living', 'data-living-at'] });
     // a width that crosses a breakpoint: the Blocks whose settings change there start again with them
     var widthFrame = 0;
@@ -1935,6 +1938,8 @@
     };
     window.addEventListener('resize', onResize);
     return function () {
+      var at = scanners.indexOf(scan);
+      if (at >= 0) scanners.splice(at, 1);
       window.removeEventListener('resize', onResize);
       watch.disconnect();
       running.forEach(function (r) { r.stop(); });
@@ -1942,5 +1947,16 @@
     };
   }
 
-  window.LivingBlocks = { start: start, version: '__LIVINGBLOCKS_VERSION__' };
+  /**
+   * A behaviour from an add-on (livingblocks.dashboard: chart, table), never one of these: the Blocks of its kind
+   * already on a started page start at once. The add-on is given the helpers every behaviour uses (kit).
+   */
+  function register(kind, run) {
+    if (KINDS[kind] || typeof run !== 'function') return;
+    KINDS[kind] = run;
+    scanners.slice().forEach(function (scan) { scan(); });
+  }
+  var kit = { partOf: partOf, asButton: asButton, announce: announce, reduced: reduced, ease: EASE };
+
+  window.LivingBlocks = { start: start, register: register, kit: kit, version: '__LIVINGBLOCKS_VERSION__' };
 })();

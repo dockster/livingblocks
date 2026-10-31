@@ -59,7 +59,7 @@ test('a field the format does not have is refused, at every level, as the schema
 test('spacing off the 4 pt scale is refused', () => {
   const b = copy(carousel);
   b.root.layout.gap = 18;
-  assert.match(validateBlock(b).errors.join('\n'), /4 pt scale \(multiples of 4\), not 18/);
+  assert.match(validateBlock(b).errors.join('\n'), /4 pt scale \(multiples of 4, or a gap of 1 for a hairline\), not 18/);
 });
 
 test('the Blocks come grouped by behaviour, each behaviour own Block first', () => {

@@ -1,0 +1,1506 @@
+{
+  "$schema": "../schema/block.schema.json",
+  "format": 1,
+  "id": "table",
+  "kind": "table",
+  "label": "Table",
+  "hint": "Rows and columns from your data: sorts by a column, lights the row under the pointer, searches and pages, and scrolls sideways on a phone",
+  "category": "data",
+  "isNew": true,
+  "settings": {
+    "sort": 0,
+    "dir": "desc",
+    "pageSize": 10,
+    "pin": true,
+    "stripes": false,
+    "density": "comfortable",
+    "tones": "Paid:positive;Refunded:info;Pending:warning;Failed:negative",
+    "count": "Viewing {from} to {to} of {total}"
+  },
+  "root": {
+    "type": "stack",
+    "name": "Table",
+    "w": 1000,
+    "h": 420,
+    "layout": {
+      "direction": "column",
+      "gap": 0,
+      "pad": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "sizeW": "fill",
+    "sizeH": "fit",
+    "fill": "surface",
+    "stroke": "field",
+    "radius": "design",
+    "clip": true,
+    "children": [
+      {
+        "type": "stack",
+        "name": "Search bar",
+        "w": 200,
+        "h": 72,
+        "layout": {
+          "direction": "row",
+          "gap": 0,
+          "pad": [
+            16,
+            24,
+            16,
+            24
+          ]
+        },
+        "sizeW": "fill",
+        "sizeH": "fit",
+        "hidden": true,
+        "children": [
+          {
+            "type": "stack",
+            "name": "Search",
+            "w": 200,
+            "h": 40,
+            "layout": {
+              "direction": "row",
+              "gap": 0,
+              "pad": [
+                12,
+                16,
+                12,
+                16
+              ],
+              "align": "center"
+            },
+            "sizeW": "fill",
+            "sizeH": "fit",
+            "part": "search",
+            "fill": "field",
+            "stroke": "edge",
+            "radius": "design",
+            "children": [
+              {
+                "type": "text",
+                "name": "Search placeholder",
+                "w": 200,
+                "h": 24,
+                "sizeW": "fill",
+                "text": "Search",
+                "ink": "ink",
+                "typography": {
+                  "role": "body",
+                  "size": 15,
+                  "weight": 400
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "stack",
+        "name": "Grid",
+        "w": 200,
+        "h": 280,
+        "layout": {
+          "direction": "column",
+          "gap": 0,
+          "pad": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "sizeW": "fill",
+        "sizeH": "fit",
+        "clip": true,
+        "children": [
+          {
+            "type": "stack",
+            "name": "Header",
+            "w": 200,
+            "h": 56,
+            "layout": {
+              "direction": "row",
+              "gap": 24,
+              "pad": [
+                4,
+                24,
+                4,
+                24
+              ],
+              "align": "center"
+            },
+            "sizeW": "fill",
+            "sizeH": "fit",
+            "part": "head",
+            "fill": "field",
+            "children": [
+              {
+                "type": "stack",
+                "name": "Date column",
+                "w": 200,
+                "h": 48,
+                "layout": {
+                  "direction": "row",
+                  "gap": 8,
+                  "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "align": "center"
+                },
+                "sizeW": "fill",
+                "sizeH": "fixed",
+                "part": "column",
+                "column": {
+                  "kind": "date",
+                  "sort": true,
+                  "min": 140
+                },
+                "children": [
+                  {
+                    "type": "text",
+                    "name": "Date label",
+                    "w": 120,
+                    "h": 24,
+                    "sizeW": "fit",
+                    "text": "Date",
+                    "ink": "ink",
+                    "typography": {
+                      "role": "body",
+                      "size": 15,
+                      "weight": 600
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "name": "Sort arrow",
+                    "w": 16,
+                    "h": 24,
+                    "sizeW": "fit",
+                    "text": "↓",
+                    "ink": "ink",
+                    "typography": {
+                      "role": "body",
+                      "size": 15,
+                      "weight": 600
+                    },
+                    "part": "icon"
+                  }
+                ]
+              },
+              {
+                "type": "stack",
+                "name": "Customer column",
+                "w": 200,
+                "h": 48,
+                "layout": {
+                  "direction": "row",
+                  "gap": 8,
+                  "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "align": "center"
+                },
+                "sizeW": "fill",
+                "sizeH": "fixed",
+                "part": "column",
+                "column": {
+                  "kind": "person",
+                  "sort": true,
+                  "min": 180
+                },
+                "children": [
+                  {
+                    "type": "text",
+                    "name": "Customer label",
+                    "w": 120,
+                    "h": 24,
+                    "sizeW": "fit",
+                    "text": "Customer",
+                    "ink": "ink",
+                    "typography": {
+                      "role": "body",
+                      "size": 15,
+                      "weight": 600
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "name": "Sort arrow",
+                    "w": 16,
+                    "h": 24,
+                    "sizeW": "fit",
+                    "text": "↓",
+                    "ink": "ink",
+                    "typography": {
+                      "role": "body",
+                      "size": 15,
+                      "weight": 600
+                    },
+                    "part": "icon"
+                  }
+                ]
+              },
+              {
+                "type": "stack",
+                "name": "Product column",
+                "w": 200,
+                "h": 48,
+                "layout": {
+                  "direction": "row",
+                  "gap": 8,
+                  "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "align": "center"
+                },
+                "sizeW": "fill",
+                "sizeH": "fixed",
+                "part": "column",
+                "column": {
+                  "kind": "text",
+                  "sort": true,
+                  "min": 160,
+                  "phone": false
+                },
+                "children": [
+                  {
+                    "type": "text",
+                    "name": "Product label",
+                    "w": 120,
+                    "h": 24,
+                    "sizeW": "fit",
+                    "text": "Product",
+                    "ink": "ink",
+                    "typography": {
+                      "role": "body",
+                      "size": 15,
+                      "weight": 600
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "name": "Sort arrow",
+                    "w": 16,
+                    "h": 24,
+                    "sizeW": "fit",
+                    "text": "↓",
+                    "ink": "ink",
+                    "typography": {
+                      "role": "body",
+                      "size": 15,
+                      "weight": 600
+                    },
+                    "part": "icon"
+                  }
+                ]
+              },
+              {
+                "type": "stack",
+                "name": "Status column",
+                "w": 200,
+                "h": 48,
+                "layout": {
+                  "direction": "row",
+                  "gap": 8,
+                  "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "align": "center"
+                },
+                "sizeW": "fill",
+                "sizeH": "fixed",
+                "part": "column",
+                "column": {
+                  "kind": "status",
+                  "sort": true,
+                  "min": 120
+                },
+                "children": [
+                  {
+                    "type": "text",
+                    "name": "Status label",
+                    "w": 120,
+                    "h": 24,
+                    "sizeW": "fit",
+                    "text": "Status",
+                    "ink": "ink",
+                    "typography": {
+                      "role": "body",
+                      "size": 15,
+                      "weight": 600
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "name": "Sort arrow",
+                    "w": 16,
+                    "h": 24,
+                    "sizeW": "fit",
+                    "text": "↓",
+                    "ink": "ink",
+                    "typography": {
+                      "role": "body",
+                      "size": 15,
+                      "weight": 600
+                    },
+                    "part": "icon"
+                  }
+                ]
+              },
+              {
+                "type": "stack",
+                "name": "Amount column",
+                "w": 200,
+                "h": 48,
+                "layout": {
+                  "direction": "row",
+                  "gap": 8,
+                  "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "align": "center",
+                  "justify": "end"
+                },
+                "sizeW": "fill",
+                "sizeH": "fixed",
+                "part": "column",
+                "column": {
+                  "kind": "money",
+                  "sort": true,
+                  "min": 100
+                },
+                "children": [
+                  {
+                    "type": "text",
+                    "name": "Amount label",
+                    "w": 120,
+                    "h": 24,
+                    "sizeW": "fill",
+                    "text": "Amount",
+                    "ink": "ink",
+                    "typography": {
+                      "role": "body",
+                      "size": 15,
+                      "weight": 600,
+                      "align": "right"
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "name": "Sort arrow",
+                    "w": 16,
+                    "h": 24,
+                    "sizeW": "fit",
+                    "text": "↓",
+                    "ink": "ink",
+                    "typography": {
+                      "role": "body",
+                      "size": 15,
+                      "weight": 600
+                    },
+                    "part": "icon"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "stack",
+            "name": "Rows",
+            "w": 200,
+            "h": 220,
+            "layout": {
+              "direction": "column",
+              "gap": 1,
+              "pad": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            "sizeW": "fill",
+            "sizeH": "fit",
+            "part": "body",
+            "fill": "field",
+            "children": [
+              {
+                "type": "stack",
+                "name": "Row 1",
+                "w": 200,
+                "h": 72,
+                "layout": {
+                  "direction": "row",
+                  "gap": 24,
+                  "pad": [
+                    20,
+                    24,
+                    20,
+                    24
+                  ],
+                  "align": "center"
+                },
+                "sizeW": "fill",
+                "sizeH": "fit",
+                "part": "row",
+                "fill": "surface",
+                "children": [
+                  {
+                    "type": "stack",
+                    "name": "Date cell",
+                    "w": 200,
+                    "h": 24,
+                    "layout": {
+                      "direction": "row",
+                      "gap": 0,
+                      "pad": [
+                        0,
+                        0,
+                        0,
+                        0
+                      ],
+                      "align": "center"
+                    },
+                    "sizeW": "fill",
+                    "sizeH": "fit",
+                    "part": "cell",
+                    "children": [
+                      {
+                        "type": "text",
+                        "name": "Date",
+                        "w": 200,
+                        "h": 24,
+                        "sizeW": "fill",
+                        "text": "Oct 18, 2026, 19:34",
+                        "ink": "ink",
+                        "typography": {
+                          "role": "body",
+                          "size": 15,
+                          "weight": 400
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "stack",
+                    "name": "Customer cell",
+                    "w": 200,
+                    "h": 32,
+                    "layout": {
+                      "direction": "row",
+                      "gap": 12,
+                      "pad": [
+                        0,
+                        0,
+                        0,
+                        0
+                      ],
+                      "align": "center"
+                    },
+                    "sizeW": "fill",
+                    "sizeH": "fit",
+                    "part": "cell",
+                    "children": [
+                      {
+                        "type": "stack",
+                        "name": "Avatar",
+                        "w": 32,
+                        "h": 32,
+                        "layout": {
+                          "direction": "row",
+                          "gap": 0,
+                          "pad": [
+                            0,
+                            0,
+                            0,
+                            0
+                          ],
+                          "align": "center",
+                          "justify": "center"
+                        },
+                        "sizeW": "fixed",
+                        "sizeH": "fixed",
+                        "fill": "field",
+                        "radius": 16,
+                        "children": [
+                          {
+                            "type": "text",
+                            "name": "Initials",
+                            "w": 24,
+                            "h": 24,
+                            "sizeW": "fit",
+                            "text": "MO",
+                            "ink": "ink",
+                            "typography": {
+                              "role": "body",
+                              "size": 15,
+                              "weight": 600,
+                              "align": "center"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "text",
+                        "name": "Name",
+                        "w": 140,
+                        "h": 24,
+                        "sizeW": "fill",
+                        "text": "Maya Okafor",
+                        "ink": "ink",
+                        "typography": {
+                          "role": "body",
+                          "size": 15,
+                          "weight": 400
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "stack",
+                    "name": "Product cell",
+                    "w": 200,
+                    "h": 24,
+                    "layout": {
+                      "direction": "row",
+                      "gap": 0,
+                      "pad": [
+                        0,
+                        0,
+                        0,
+                        0
+                      ],
+                      "align": "center"
+                    },
+                    "sizeW": "fill",
+                    "sizeH": "fit",
+                    "part": "cell",
+                    "children": [
+                      {
+                        "type": "text",
+                        "name": "Product",
+                        "w": 200,
+                        "h": 24,
+                        "sizeW": "fill",
+                        "text": "Studio monthly",
+                        "ink": "ink",
+                        "typography": {
+                          "role": "body",
+                          "size": 15,
+                          "weight": 400
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "stack",
+                    "name": "Status cell",
+                    "w": 200,
+                    "h": 28,
+                    "layout": {
+                      "direction": "row",
+                      "gap": 0,
+                      "pad": [
+                        0,
+                        0,
+                        0,
+                        0
+                      ],
+                      "align": "center"
+                    },
+                    "sizeW": "fill",
+                    "sizeH": "fit",
+                    "part": "cell",
+                    "children": [
+                      {
+                        "type": "stack",
+                        "name": "Badge",
+                        "w": 200,
+                        "h": 28,
+                        "layout": {
+                          "direction": "row",
+                          "gap": 0,
+                          "pad": [
+                            4,
+                            12,
+                            4,
+                            12
+                          ]
+                        },
+                        "sizeW": "fit",
+                        "sizeH": "fit",
+                        "fill": "field",
+                        "radius": 6,
+                        "children": [
+                          {
+                            "type": "text",
+                            "name": "Status",
+                            "w": 72,
+                            "h": 24,
+                            "sizeW": "fit",
+                            "text": "Refunded",
+                            "ink": "ink",
+                            "typography": {
+                              "role": "body",
+                              "size": 15,
+                              "weight": 500
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "stack",
+                    "name": "Amount cell",
+                    "w": 200,
+                    "h": 24,
+                    "layout": {
+                      "direction": "row",
+                      "gap": 0,
+                      "pad": [
+                        0,
+                        0,
+                        0,
+                        0
+                      ],
+                      "align": "center",
+                      "justify": "end"
+                    },
+                    "sizeW": "fill",
+                    "sizeH": "fit",
+                    "part": "cell",
+                    "children": [
+                      {
+                        "type": "text",
+                        "name": "Amount",
+                        "w": 200,
+                        "h": 24,
+                        "sizeW": "fill",
+                        "text": "$20.00",
+                        "ink": "ink",
+                        "typography": {
+                          "role": "body",
+                          "size": 15,
+                          "weight": 400,
+                          "align": "right"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "stack",
+                "name": "Row 2",
+                "w": 200,
+                "h": 72,
+                "layout": {
+                  "direction": "row",
+                  "gap": 24,
+                  "pad": [
+                    20,
+                    24,
+                    20,
+                    24
+                  ],
+                  "align": "center"
+                },
+                "sizeW": "fill",
+                "sizeH": "fit",
+                "part": "row",
+                "fill": "surface",
+                "children": [
+                  {
+                    "type": "stack",
+                    "name": "Date cell",
+                    "w": 200,
+                    "h": 24,
+                    "layout": {
+                      "direction": "row",
+                      "gap": 0,
+                      "pad": [
+                        0,
+                        0,
+                        0,
+                        0
+                      ],
+                      "align": "center"
+                    },
+                    "sizeW": "fill",
+                    "sizeH": "fit",
+                    "part": "cell",
+                    "children": [
+                      {
+                        "type": "text",
+                        "name": "Date",
+                        "w": 200,
+                        "h": 24,
+                        "sizeW": "fill",
+                        "text": "Oct 18, 2026, 15:40",
+                        "ink": "ink",
+                        "typography": {
+                          "role": "body",
+                          "size": 15,
+                          "weight": 400
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "stack",
+                    "name": "Customer cell",
+                    "w": 200,
+                    "h": 32,
+                    "layout": {
+                      "direction": "row",
+                      "gap": 12,
+                      "pad": [
+                        0,
+                        0,
+                        0,
+                        0
+                      ],
+                      "align": "center"
+                    },
+                    "sizeW": "fill",
+                    "sizeH": "fit",
+                    "part": "cell",
+                    "children": [
+                      {
+                        "type": "stack",
+                        "name": "Avatar",
+                        "w": 32,
+                        "h": 32,
+                        "layout": {
+                          "direction": "row",
+                          "gap": 0,
+                          "pad": [
+                            0,
+                            0,
+                            0,
+                            0
+                          ],
+                          "align": "center",
+                          "justify": "center"
+                        },
+                        "sizeW": "fixed",
+                        "sizeH": "fixed",
+                        "fill": "field",
+                        "radius": 16,
+                        "children": [
+                          {
+                            "type": "text",
+                            "name": "Initials",
+                            "w": 24,
+                            "h": 24,
+                            "sizeW": "fit",
+                            "text": "LM",
+                            "ink": "ink",
+                            "typography": {
+                              "role": "body",
+                              "size": 15,
+                              "weight": 600,
+                              "align": "center"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "text",
+                        "name": "Name",
+                        "w": 140,
+                        "h": 24,
+                        "sizeW": "fill",
+                        "text": "Leo Martins",
+                        "ink": "ink",
+                        "typography": {
+                          "role": "body",
+                          "size": 15,
+                          "weight": 400
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "stack",
+                    "name": "Product cell",
+                    "w": 200,
+                    "h": 24,
+                    "layout": {
+                      "direction": "row",
+                      "gap": 0,
+                      "pad": [
+                        0,
+                        0,
+                        0,
+                        0
+                      ],
+                      "align": "center"
+                    },
+                    "sizeW": "fill",
+                    "sizeH": "fit",
+                    "part": "cell",
+                    "children": [
+                      {
+                        "type": "text",
+                        "name": "Product",
+                        "w": 200,
+                        "h": 24,
+                        "sizeW": "fill",
+                        "text": "Studio yearly",
+                        "ink": "ink",
+                        "typography": {
+                          "role": "body",
+                          "size": 15,
+                          "weight": 400
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "stack",
+                    "name": "Status cell",
+                    "w": 200,
+                    "h": 28,
+                    "layout": {
+                      "direction": "row",
+                      "gap": 0,
+                      "pad": [
+                        0,
+                        0,
+                        0,
+                        0
+                      ],
+                      "align": "center"
+                    },
+                    "sizeW": "fill",
+                    "sizeH": "fit",
+                    "part": "cell",
+                    "children": [
+                      {
+                        "type": "stack",
+                        "name": "Badge",
+                        "w": 200,
+                        "h": 28,
+                        "layout": {
+                          "direction": "row",
+                          "gap": 0,
+                          "pad": [
+                            4,
+                            12,
+                            4,
+                            12
+                          ]
+                        },
+                        "sizeW": "fit",
+                        "sizeH": "fit",
+                        "fill": "field",
+                        "radius": 6,
+                        "children": [
+                          {
+                            "type": "text",
+                            "name": "Status",
+                            "w": 72,
+                            "h": 24,
+                            "sizeW": "fit",
+                            "text": "Paid",
+                            "ink": "ink",
+                            "typography": {
+                              "role": "body",
+                              "size": 15,
+                              "weight": 500
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "stack",
+                    "name": "Amount cell",
+                    "w": 200,
+                    "h": 24,
+                    "layout": {
+                      "direction": "row",
+                      "gap": 0,
+                      "pad": [
+                        0,
+                        0,
+                        0,
+                        0
+                      ],
+                      "align": "center",
+                      "justify": "end"
+                    },
+                    "sizeW": "fill",
+                    "sizeH": "fit",
+                    "part": "cell",
+                    "children": [
+                      {
+                        "type": "text",
+                        "name": "Amount",
+                        "w": 200,
+                        "h": 24,
+                        "sizeW": "fill",
+                        "text": "$192.00",
+                        "ink": "ink",
+                        "typography": {
+                          "role": "body",
+                          "size": 15,
+                          "weight": 400,
+                          "align": "right"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "stack",
+                "name": "Row 3",
+                "w": 200,
+                "h": 72,
+                "layout": {
+                  "direction": "row",
+                  "gap": 24,
+                  "pad": [
+                    20,
+                    24,
+                    20,
+                    24
+                  ],
+                  "align": "center"
+                },
+                "sizeW": "fill",
+                "sizeH": "fit",
+                "part": "row",
+                "fill": "surface",
+                "children": [
+                  {
+                    "type": "stack",
+                    "name": "Date cell",
+                    "w": 200,
+                    "h": 24,
+                    "layout": {
+                      "direction": "row",
+                      "gap": 0,
+                      "pad": [
+                        0,
+                        0,
+                        0,
+                        0
+                      ],
+                      "align": "center"
+                    },
+                    "sizeW": "fill",
+                    "sizeH": "fit",
+                    "part": "cell",
+                    "children": [
+                      {
+                        "type": "text",
+                        "name": "Date",
+                        "w": 200,
+                        "h": 24,
+                        "sizeW": "fill",
+                        "text": "Oct 17, 2026, 09:12",
+                        "ink": "ink",
+                        "typography": {
+                          "role": "body",
+                          "size": 15,
+                          "weight": 400
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "stack",
+                    "name": "Customer cell",
+                    "w": 200,
+                    "h": 32,
+                    "layout": {
+                      "direction": "row",
+                      "gap": 12,
+                      "pad": [
+                        0,
+                        0,
+                        0,
+                        0
+                      ],
+                      "align": "center"
+                    },
+                    "sizeW": "fill",
+                    "sizeH": "fit",
+                    "part": "cell",
+                    "children": [
+                      {
+                        "type": "stack",
+                        "name": "Avatar",
+                        "w": 32,
+                        "h": 32,
+                        "layout": {
+                          "direction": "row",
+                          "gap": 0,
+                          "pad": [
+                            0,
+                            0,
+                            0,
+                            0
+                          ],
+                          "align": "center",
+                          "justify": "center"
+                        },
+                        "sizeW": "fixed",
+                        "sizeH": "fixed",
+                        "fill": "field",
+                        "radius": 16,
+                        "children": [
+                          {
+                            "type": "text",
+                            "name": "Initials",
+                            "w": 24,
+                            "h": 24,
+                            "sizeW": "fit",
+                            "text": "AR",
+                            "ink": "ink",
+                            "typography": {
+                              "role": "body",
+                              "size": 15,
+                              "weight": 600,
+                              "align": "center"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "text",
+                        "name": "Name",
+                        "w": 140,
+                        "h": 24,
+                        "sizeW": "fill",
+                        "text": "Ana Ruiz",
+                        "ink": "ink",
+                        "typography": {
+                          "role": "body",
+                          "size": 15,
+                          "weight": 400
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "stack",
+                    "name": "Product cell",
+                    "w": 200,
+                    "h": 24,
+                    "layout": {
+                      "direction": "row",
+                      "gap": 0,
+                      "pad": [
+                        0,
+                        0,
+                        0,
+                        0
+                      ],
+                      "align": "center"
+                    },
+                    "sizeW": "fill",
+                    "sizeH": "fit",
+                    "part": "cell",
+                    "children": [
+                      {
+                        "type": "text",
+                        "name": "Product",
+                        "w": 200,
+                        "h": 24,
+                        "sizeW": "fill",
+                        "text": "Studio monthly",
+                        "ink": "ink",
+                        "typography": {
+                          "role": "body",
+                          "size": 15,
+                          "weight": 400
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "stack",
+                    "name": "Status cell",
+                    "w": 200,
+                    "h": 28,
+                    "layout": {
+                      "direction": "row",
+                      "gap": 0,
+                      "pad": [
+                        0,
+                        0,
+                        0,
+                        0
+                      ],
+                      "align": "center"
+                    },
+                    "sizeW": "fill",
+                    "sizeH": "fit",
+                    "part": "cell",
+                    "children": [
+                      {
+                        "type": "stack",
+                        "name": "Badge",
+                        "w": 200,
+                        "h": 28,
+                        "layout": {
+                          "direction": "row",
+                          "gap": 0,
+                          "pad": [
+                            4,
+                            12,
+                            4,
+                            12
+                          ]
+                        },
+                        "sizeW": "fit",
+                        "sizeH": "fit",
+                        "fill": "field",
+                        "radius": 6,
+                        "children": [
+                          {
+                            "type": "text",
+                            "name": "Status",
+                            "w": 72,
+                            "h": 24,
+                            "sizeW": "fit",
+                            "text": "Pending",
+                            "ink": "ink",
+                            "typography": {
+                              "role": "body",
+                              "size": 15,
+                              "weight": 500
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "stack",
+                    "name": "Amount cell",
+                    "w": 200,
+                    "h": 24,
+                    "layout": {
+                      "direction": "row",
+                      "gap": 0,
+                      "pad": [
+                        0,
+                        0,
+                        0,
+                        0
+                      ],
+                      "align": "center",
+                      "justify": "end"
+                    },
+                    "sizeW": "fill",
+                    "sizeH": "fit",
+                    "part": "cell",
+                    "children": [
+                      {
+                        "type": "text",
+                        "name": "Amount",
+                        "w": 200,
+                        "h": 24,
+                        "sizeW": "fill",
+                        "text": "$20.00",
+                        "ink": "ink",
+                        "typography": {
+                          "role": "body",
+                          "size": 15,
+                          "weight": 400,
+                          "align": "right"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "stack",
+        "name": "No rows",
+        "w": 1000,
+        "h": 72,
+        "layout": {
+          "direction": "row",
+          "gap": 0,
+          "pad": [
+            24,
+            24,
+            24,
+            24
+          ]
+        },
+        "sizeW": "fill",
+        "sizeH": "fit",
+        "part": "empty",
+        "hidden": true,
+        "children": [
+          {
+            "type": "text",
+            "name": "No rows words",
+            "w": 400,
+            "h": 24,
+            "sizeW": "fill",
+            "text": "No rows match your search.",
+            "ink": "ink",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 400
+            }
+          }
+        ]
+      },
+      {
+        "type": "stack",
+        "name": "Footer",
+        "w": 200,
+        "h": 60,
+        "layout": {
+          "direction": "row",
+          "gap": 12,
+          "pad": [
+            12,
+            24,
+            12,
+            24
+          ],
+          "align": "center",
+          "justify": "space-between",
+          "wrap": true
+        },
+        "sizeW": "fill",
+        "sizeH": "fit",
+        "children": [
+          {
+            "type": "text",
+            "name": "Count",
+            "w": 260,
+            "h": 24,
+            "sizeW": "fit",
+            "text": "Viewing 1 to 3 of 3",
+            "ink": "ink",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 400
+            },
+            "part": "counter"
+          },
+          {
+            "type": "stack",
+            "name": "Pages",
+            "w": 200,
+            "h": 44,
+            "layout": {
+              "direction": "row",
+              "gap": 8,
+              "pad": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "align": "center"
+            },
+            "sizeW": "fit",
+            "sizeH": "fit",
+            "children": [
+              {
+                "type": "stack",
+                "name": "First",
+                "w": 44,
+                "h": 44,
+                "layout": {
+                  "direction": "row",
+                  "gap": 0,
+                  "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "align": "center",
+                  "justify": "center"
+                },
+                "sizeW": "fixed",
+                "sizeH": "fixed",
+                "part": "first",
+                "stroke": "edge",
+                "radius": 22,
+                "children": [
+                  {
+                    "type": "text",
+                    "name": "First glyph",
+                    "w": 16,
+                    "h": 24,
+                    "sizeW": "fit",
+                    "text": "«",
+                    "ink": "ink",
+                    "typography": {
+                      "role": "body",
+                      "size": 15,
+                      "weight": 600,
+                      "align": "center"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "stack",
+                "name": "Previous",
+                "w": 44,
+                "h": 44,
+                "layout": {
+                  "direction": "row",
+                  "gap": 0,
+                  "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "align": "center",
+                  "justify": "center"
+                },
+                "sizeW": "fixed",
+                "sizeH": "fixed",
+                "part": "prev",
+                "stroke": "edge",
+                "radius": 22,
+                "children": [
+                  {
+                    "type": "text",
+                    "name": "Previous glyph",
+                    "w": 16,
+                    "h": 24,
+                    "sizeW": "fit",
+                    "text": "‹",
+                    "ink": "ink",
+                    "typography": {
+                      "role": "body",
+                      "size": 15,
+                      "weight": 600,
+                      "align": "center"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "stack",
+                "name": "Next",
+                "w": 44,
+                "h": 44,
+                "layout": {
+                  "direction": "row",
+                  "gap": 0,
+                  "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "align": "center",
+                  "justify": "center"
+                },
+                "sizeW": "fixed",
+                "sizeH": "fixed",
+                "part": "next",
+                "stroke": "edge",
+                "radius": 22,
+                "children": [
+                  {
+                    "type": "text",
+                    "name": "Next glyph",
+                    "w": 16,
+                    "h": 24,
+                    "sizeW": "fit",
+                    "text": "›",
+                    "ink": "ink",
+                    "typography": {
+                      "role": "body",
+                      "size": 15,
+                      "weight": 600,
+                      "align": "center"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "stack",
+                "name": "Last",
+                "w": 44,
+                "h": 44,
+                "layout": {
+                  "direction": "row",
+                  "gap": 0,
+                  "pad": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "align": "center",
+                  "justify": "center"
+                },
+                "sizeW": "fixed",
+                "sizeH": "fixed",
+                "part": "last",
+                "stroke": "edge",
+                "radius": 22,
+                "children": [
+                  {
+                    "type": "text",
+                    "name": "Last glyph",
+                    "w": 16,
+                    "h": 24,
+                    "sizeW": "fit",
+                    "text": "»",
+                    "ink": "ink",
+                    "typography": {
+                      "role": "body",
+                      "size": 15,
+                      "weight": 600,
+                      "align": "center"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

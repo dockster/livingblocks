@@ -1,0 +1,274 @@
+{
+  "$schema": "../schema/block.schema.json",
+  "format": 1,
+  "id": "chart",
+  "kind": "chart",
+  "label": "Chart",
+  "hint": "A line, an area or bars drawn from your data: a tooltip on each point, keyboard reading, drawn in as it comes into view",
+  "category": "data",
+  "isNew": true,
+  "settings": {
+    "type": "area",
+    "data": "Day,Revenue\nSep 30,120\nOct 1,144\nOct 2,166\nOct 3,184\nOct 4,196\nOct 5,203\nOct 6,204\nOct 7,200\nOct 8,195\nOct 9,188\nOct 10,184\nOct 11,184\nOct 12,188\nOct 13,199\nOct 14,215\nOct 15,235\nOct 16,319\nOct 17,343\nOct 18,306\nOct 19,325\nOct 20,339\nOct 21,348\nOct 22,351\nOct 23,349\nOct 24,344\nOct 25,337\nOct 26,332\nOct 27,330\nOct 28,333\nOct 29,341",
+    "stacked": false,
+    "smooth": false,
+    "points": false,
+    "zero": true,
+    "format": "number",
+    "prefix": "$",
+    "suffix": "",
+    "decimals": 0,
+    "grid": true,
+    "legend": true,
+    "draw": "once",
+    "value": "sum",
+    "ticks": 8
+  },
+  "root": {
+    "type": "stack",
+    "name": "Chart",
+    "w": 640,
+    "h": 420,
+    "layout": {
+      "direction": "column",
+      "gap": 8,
+      "pad": [
+        32,
+        32,
+        24,
+        32
+      ]
+    },
+    "sizeW": "fill",
+    "sizeH": "fit",
+    "fill": "surface",
+    "stroke": "field",
+    "radius": "design",
+    "children": [
+      {
+        "type": "text",
+        "name": "Title",
+        "w": 400,
+        "h": 24,
+        "sizeW": "fill",
+        "text": "Revenue",
+        "ink": "ink",
+        "typography": {
+          "role": "body",
+          "size": 17,
+          "weight": 500
+        }
+      },
+      {
+        "type": "text",
+        "name": "Value",
+        "w": 400,
+        "h": 36,
+        "sizeW": "fill",
+        "text": "$0",
+        "ink": "ink",
+        "typography": {
+          "role": "heading",
+          "size": 28,
+          "weight": 600
+        },
+        "part": "value"
+      },
+      {
+        "type": "stack",
+        "name": "Range row",
+        "w": 200,
+        "h": 24,
+        "layout": {
+          "direction": "row",
+          "gap": 8,
+          "pad": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "align": "center"
+        },
+        "sizeW": "fill",
+        "sizeH": "fit",
+        "children": [
+          {
+            "type": "ellipse",
+            "name": "Series ring",
+            "w": 12,
+            "h": 12,
+            "sizeW": "fixed",
+            "stroke": "accent",
+            "fill": "surface"
+          },
+          {
+            "type": "text",
+            "name": "Range",
+            "w": 300,
+            "h": 24,
+            "sizeW": "fill",
+            "text": "Sep 30 to Oct 29, 2026",
+            "ink": "ink",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 400
+            },
+            "part": "range"
+          }
+        ]
+      },
+      {
+        "type": "frame",
+        "name": "Plot",
+        "part": "plot",
+        "w": 576,
+        "h": 200,
+        "sizeW": "fill",
+        "sizeH": "fixed"
+      },
+      {
+        "type": "stack",
+        "name": "Labels",
+        "w": 200,
+        "h": 24,
+        "layout": {
+          "direction": "row",
+          "gap": 0,
+          "pad": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "justify": "space-between"
+        },
+        "sizeW": "fill",
+        "sizeH": "fit",
+        "children": [
+          {
+            "type": "text",
+            "name": "Label {n}",
+            "w": 48,
+            "h": 24,
+            "sizeW": "fit",
+            "text": "Sep 30",
+            "ink": "ink",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 400
+            },
+            "part": "tick"
+          },
+          {
+            "type": "text",
+            "name": "Label {n}",
+            "w": 48,
+            "h": 24,
+            "sizeW": "fit",
+            "text": "Oct 4",
+            "ink": "ink",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 400
+            },
+            "part": "tick"
+          },
+          {
+            "type": "text",
+            "name": "Label {n}",
+            "w": 48,
+            "h": 24,
+            "sizeW": "fit",
+            "text": "Oct 8",
+            "ink": "ink",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 400
+            },
+            "part": "tick"
+          },
+          {
+            "type": "text",
+            "name": "Label {n}",
+            "w": 48,
+            "h": 24,
+            "sizeW": "fit",
+            "text": "Oct 12",
+            "ink": "ink",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 400
+            },
+            "part": "tick"
+          },
+          {
+            "type": "text",
+            "name": "Label {n}",
+            "w": 48,
+            "h": 24,
+            "sizeW": "fit",
+            "text": "Oct 16",
+            "ink": "ink",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 400
+            },
+            "part": "tick"
+          },
+          {
+            "type": "text",
+            "name": "Label {n}",
+            "w": 48,
+            "h": 24,
+            "sizeW": "fit",
+            "text": "Oct 20",
+            "ink": "ink",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 400
+            },
+            "part": "tick"
+          },
+          {
+            "type": "text",
+            "name": "Label {n}",
+            "w": 48,
+            "h": 24,
+            "sizeW": "fit",
+            "text": "Oct 24",
+            "ink": "ink",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 400
+            },
+            "part": "tick"
+          },
+          {
+            "type": "text",
+            "name": "Label {n}",
+            "w": 48,
+            "h": 24,
+            "sizeW": "fit",
+            "text": "Oct 28",
+            "ink": "ink",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 400
+            },
+            "part": "tick"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -11,4 +11,5 @@ export const CATEGORIES: Category[] = [
   { id: 'navigation', label: 'Navigation' },
   { id: 'feedback', label: 'Feedback' },
   { id: 'forms', label: 'Forms' },
+  { id: 'data', label: 'Data' },
 ];

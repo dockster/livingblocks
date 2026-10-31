@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.7.0
+
+- Two Blocks for data, in a new Data group, played by an add-on of their own (`livingblocks/dashboard`,
+  `livingblocks.dashboard.min.js`, 7.8 KB gzipped), loaded after the runtime only by pages that hold one; the runtime
+  gains `LivingBlocks.register(kind, behaviour)` and its helpers (`LivingBlocks.kit`) for it.
+- `table`: the design's own rows and cells, each header cell saying what its column holds (`column`: text, number,
+  money, percent, date, status, person, link). Read as a table by assistive technology; sorts by a column's kind from
+  its header (mouse and keyboard, `aria-sort`, its arrow turning, the change read out); the row under the pointer lit
+  in the header's colour; a search box; pages with first, previous, next and last, the counter's words filled in
+  (`{from}`, `{to}`, `{total}`); words when nothing matches; on a narrow screen it scrolls sideways inside itself with
+  its first column held, and a column can be hidden on phones. Settings `sort`, `dir`, `pageSize`, `pin`, `stripes`,
+  `density`, `tones`, `count`.
+- `chart`: a line, an area or bars drawn from `data` (rows of a label and values, as a spreadsheet copies them) by
+  the design tool; on the page a tooltip and a guide line at the point under the pointer, arrow keys reading each
+  point aloud, its data as a table for screen readers, labels that would overlap stepping aside, drawing in as it
+  comes into view (at rest under reduced motion). Settings `type`, `data`, `stacked`, `smooth`, `points`, `zero`,
+  `format`, `prefix`, `suffix`, `decimals`, `grid`, `legend`, `draw`, `value`, `ticks`.
+- The chart's data and drawing as functions for design tools: `parseData`, `dataText`, `readNumber`, `formatValue`,
+  `summarise`, `geometry`.
+- A row can `wrap` (a table's footer on a phone); a gap of 1 is a hairline (dividers drawn by the colour behind).
+- Blocks: Table, Chart, Bar chart.
+
 ## 0.6.0
 
 - A form asks its visitor for Cloudflare Turnstile's pass when its host hands a site key with the page's token (`ts`):

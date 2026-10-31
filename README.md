@@ -1,6 +1,6 @@
 # livingblocks
 
-Working web components as data. A carousel, an accordion, a notice or a form is
+Working web components as data. A carousel, an accordion, a notice, a form, a table or a chart is
 described as a tree of layers with roles (the colours and text styles of
 whatever design it lands in), its behaviour's settings, and the parts that
 behaviour needs. A design tool draws the tree in the design's own style; a
@@ -8,7 +8,7 @@ page carries the settings as attributes, and a small runtime makes the
 component work, with a keyboard and a screen reader, and with reduced motion
 respected.
 
-No dependencies. The runtime is about 15 KB gzipped.
+No dependencies. The runtime is about 15 KB gzipped; tables and charts are an add-on of about 8 KB.
 
 LivingBlocks is the runtime of [uxdeck](https://uxdeck.app/blocks), the design
 canvas of [uxspot.io](https://uxspot.io): the Blocks you place there work on the
@@ -23,6 +23,10 @@ sites it publishes. Every behaviour, its settings and the checker are on
   (`validateBlock`), the groups (`CATEGORIES`) and the types.
 - `livingblocks/global` and `livingblocks/global.min`: the runtime as a plain script,
   `window.LivingBlocks.start(root)`.
+- `livingblocks/dashboard` and `livingblocks/dashboard.min`: the table and the chart, an add-on loaded after the
+  runtime (and before `start`) only by pages that hold one; it registers them with `LivingBlocks.register`.
+- `parseData`, `formatValue`, `geometry` and their kin (ES module): a chart's data read as a spreadsheet copies it,
+  and where its points, lines and bars stand, for a design tool drawing it.
 
 ## On a page
 
@@ -62,6 +66,8 @@ order as the page's CSS cascades.
 | accordion | item, header, panel (an icon may turn) | single, start (-1: none open) |
 | notice | dismiss (any number: a close, a Got it) | position, delay, stay (0: until closed), remember |
 | form | field (each with `data-living-field`: type text, email, tel, long, choice or checkbox, name, required, options), label, input, submit, status | after (message, redirect), redirect, to, show (helper, toast), sentText, failText, preview (sent, failed) |
+| table (add-on) | head, column (each with `data-living-column`: kind text, number, money, percent, date, status, person or link, sort, min, phone), body, row, cell; optional icon (a column's sort arrow), search, first, prev, next, last, counter, empty | sort, dir, pageSize, pin, stripes, density, tones, count |
+| chart (add-on) | plot (its series' layers carry `data-living-series`), tick, value, range; bar | type (line, area, bar), data, stacked, smooth, points, zero, format, prefix, suffix, decimals, grid, legend, draw, value, ticks |
 
 A notice's place on the window is the page's own CSS (a design tool pins it
 there); the runtime brings it in after `delay`, takes it away on a dismiss part,
@@ -70,6 +76,25 @@ reads its words out politely without taking the focus, and with `remember`
 keeps it away for that visitor (localStorage, keyed by its words) until its
 words change. `LivingBlocks.start(root, { remember: false })` shows it every
 time, for a design tool's preview. It is not a cookie consent.
+
+## Tables and charts
+
+They are an add-on, so a page with a carousel never downloads them:
+
+```html
+<script src="livingblocks.min.js"></script>
+<script src="livingblocks.dashboard.min.js"></script>
+<script>LivingBlocks.start(document.body)</script>
+```
+
+A table is the design's own rows and cells; each header cell says what its column holds, which decides how it
+sorts (money and numbers as numbers, dates as dates) and how a design tool draws its cells (a status as a badge, a
+person with initials). The counter's words come from `count`: "Viewing {from} to {to} of {total}".
+
+A chart's `data` is text, rows of a label and a value per series, the first row naming them, as a spreadsheet copies
+them (tabs) or as CSV: `Month,Revenue,Costs\nJan,1200,400`. A design tool draws it from `geometry(parseData(data),
+settings, width, height)`; the add-on reads the same data for its tooltip, its keyboard and the table screen readers
+get.
 
 ## Forms
 

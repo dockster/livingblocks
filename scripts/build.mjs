@@ -14,7 +14,7 @@ const banner = `/*! livingblocks ${version} | (c) 2026 uxspot.io | MIT License |
 
 // the Blocks, checked, then gathered by behaviour (as KINDS lists them), each
 // behaviour's own Block first (its id is the kind's: carousel, then its looks)
-const KIND_ORDER = ['carousel', 'accordion', 'notice', 'ring', 'showcase', 'mosaic', 'cylinder', 'form'];
+const KIND_ORDER = ['carousel', 'accordion', 'notice', 'ring', 'showcase', 'mosaic', 'cylinder', 'form', 'table', 'chart'];
 const kindOf = (f) => JSON.parse(readFileSync(`blocks/${f}`, 'utf8')).kind;
 const files = readdirSync('blocks')
   .filter((f) => f.endsWith('.json'))
@@ -53,9 +53,12 @@ const builds = [
   { ...common, entryPoints: ['src/index.ts'], format: 'esm', outfile: 'dist/livingblocks.mjs' },
   { ...common, entryPoints: ['src/global.ts'], format: 'iife', outfile: 'dist/livingblocks.js' },
   { ...common, entryPoints: ['src/global.ts'], format: 'iife', minify: true, outfile: 'dist/livingblocks.min.js' },
+  // the dashboard add-on (table, chart): its own file, loaded after the runtime only by pages that hold one
+  { ...common, entryPoints: ['src/dashboard.ts'], format: 'iife', outfile: 'dist/livingblocks.dashboard.js' },
+  { ...common, entryPoints: ['src/dashboard.ts'], format: 'iife', minify: true, outfile: 'dist/livingblocks.dashboard.min.js' },
 ];
 const stamp = () => {
-  for (const f of ['livingblocks.js', 'livingblocks.min.js']) writeFileSync(`dist/${f}`, readFileSync(`dist/${f}`, 'utf8').replace('__LIVINGBLOCKS_VERSION__', version));
+  for (const f of ['livingblocks.js', 'livingblocks.min.js', 'livingblocks.dashboard.js', 'livingblocks.dashboard.min.js']) writeFileSync(`dist/${f}`, readFileSync(`dist/${f}`, 'utf8').replace('__LIVINGBLOCKS_VERSION__', version));
 };
 if (watch) {
   for (const b of builds) await (await context({ ...b, plugins: [{ name: 'stamp', setup: (x) => x.onEnd(() => setTimeout(stamp, 50)) }] })).watch();
@@ -75,9 +78,11 @@ if (watch) {
   // 14.5 since 0.5.1 (the form's toast and acted-out Preview); new behaviours go into an add-on of their own
   // (uxdeck docs/LIVINGBLOCKS-DASHBOARD-PLAN.md, slice 0), not into this file
   // 15 since 0.6.0 (2026-10-30): a form's Turnstile check on uxdeck.site pages (loaded only when the host hands a key)
-  const BUDGET = { 'livingblocks.min.js': 15 };
+  // the dashboard add-on (0.7.0, 2026-10-30): the table and the chart, never in the main file; 7.5 with the chart's
+  // shared maths (chartData.ts: reading the data, smooth lines, number formats)
+  const BUDGET = { 'livingblocks.min.js': 15, 'livingblocks.dashboard.min.js': 8 };
   let over = '';
-  for (const f of ['livingblocks.mjs', 'livingblocks.js', 'livingblocks.min.js']) {
+  for (const f of ['livingblocks.mjs', 'livingblocks.js', 'livingblocks.min.js', 'livingblocks.dashboard.js', 'livingblocks.dashboard.min.js']) {
     const b = readFileSync(`dist/${f}`);
     const gz = gzipSync(b).length / 1024;
     console.log(`${f.padEnd(18)} ${(b.length / 1024).toFixed(1).padStart(6)} KB, ${gz.toFixed(1).padStart(5)} KB gzipped${BUDGET[f] ? ` (budget ${BUDGET[f]})` : ''}`);

@@ -36,7 +36,9 @@
         "showcase",
         "mosaic",
         "cylinder",
-        "form"
+        "form",
+        "table",
+        "chart"
       ]
     },
     "label": {
@@ -121,7 +123,21 @@
             "label",
             "input",
             "submit",
-            "status"
+            "status",
+            "head",
+            "column",
+            "body",
+            "row",
+            "cell",
+            "search",
+            "first",
+            "last",
+            "empty",
+            "plot",
+            "bar",
+            "tick",
+            "value",
+            "range"
           ],
           "description": "what the behaviour needs this layer for"
         },
@@ -181,6 +197,10 @@
                 "end",
                 "space-between"
               ]
+            },
+            "wrap": {
+              "type": "boolean",
+              "description": "a row whose children go onto the next line when they do not fit"
             }
           }
         },
@@ -250,7 +270,7 @@
             "on-accent",
             "on-picture"
           ],
-          "description": "a 1px border inside the box (edge: a text box\u2019s outline, readable at 3:1 on its surface)"
+          "description": "a 1px border inside the box (edge: a text box’s outline, readable at 3:1 on its surface)"
         },
         "ink": {
           "enum": [
@@ -374,6 +394,39 @@
                 "minLength": 1,
                 "maxLength": 60
               }
+            }
+          }
+        },
+        "column": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "a table's column, on its header cell (part column): what it holds, whether its header sorts, its narrowest width, shown on phones",
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "enum": [
+                "text",
+                "number",
+                "money",
+                "percent",
+                "date",
+                "status",
+                "person",
+                "link"
+              ]
+            },
+            "sort": {
+              "type": "boolean"
+            },
+            "min": {
+              "type": "number",
+              "minimum": 40,
+              "maximum": 600
+            },
+            "phone": {
+              "type": "boolean"
             }
           }
         }

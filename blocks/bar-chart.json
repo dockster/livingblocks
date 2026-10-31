@@ -1,0 +1,334 @@
+{
+  "$schema": "../schema/block.schema.json",
+  "format": 1,
+  "id": "bar-chart",
+  "kind": "chart",
+  "label": "Bar chart",
+  "hint": "Bars by month for two series side by side, with a legend, a tooltip and keyboard reading",
+  "category": "data",
+  "isNew": true,
+  "settings": {
+    "type": "bar",
+    "data": "Month,Revenue,Costs\nJan,42000,30000\nFeb,48000,31000\nMar,51000,34000\nApr,47000,33000\nMay,58000,36000\nJun,63000,38000\nJul,61000,39000\nAug,70000,41000\nSep,74000,43000\nOct,79000,44000\nNov,83000,47000\nDec,91000,49000",
+    "stacked": false,
+    "smooth": false,
+    "points": false,
+    "zero": true,
+    "format": "compact",
+    "prefix": "$",
+    "suffix": "",
+    "decimals": 0,
+    "grid": false,
+    "legend": true,
+    "draw": "once",
+    "value": "sum",
+    "ticks": 12
+  },
+  "root": {
+    "type": "stack",
+    "name": "Chart",
+    "w": 640,
+    "h": 420,
+    "layout": {
+      "direction": "column",
+      "gap": 8,
+      "pad": [
+        32,
+        32,
+        24,
+        32
+      ]
+    },
+    "sizeW": "fill",
+    "sizeH": "fit",
+    "fill": "surface",
+    "stroke": "field",
+    "radius": "design",
+    "children": [
+      {
+        "type": "text",
+        "name": "Title",
+        "w": 400,
+        "h": 24,
+        "sizeW": "fill",
+        "text": "Revenue and costs",
+        "ink": "ink",
+        "typography": {
+          "role": "body",
+          "size": 17,
+          "weight": 500
+        }
+      },
+      {
+        "type": "text",
+        "name": "Value",
+        "w": 400,
+        "h": 36,
+        "sizeW": "fill",
+        "text": "$0",
+        "ink": "ink",
+        "typography": {
+          "role": "heading",
+          "size": 28,
+          "weight": 600
+        },
+        "part": "value"
+      },
+      {
+        "type": "stack",
+        "name": "Range row",
+        "w": 200,
+        "h": 24,
+        "layout": {
+          "direction": "row",
+          "gap": 8,
+          "pad": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "align": "center"
+        },
+        "sizeW": "fill",
+        "sizeH": "fit",
+        "children": [
+          {
+            "type": "ellipse",
+            "name": "Series ring",
+            "w": 12,
+            "h": 12,
+            "sizeW": "fixed",
+            "stroke": "accent",
+            "fill": "surface"
+          },
+          {
+            "type": "text",
+            "name": "Range",
+            "w": 300,
+            "h": 24,
+            "sizeW": "fill",
+            "text": "Jan to Dec 2026",
+            "ink": "ink",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 400
+            },
+            "part": "range"
+          }
+        ]
+      },
+      {
+        "type": "frame",
+        "name": "Plot",
+        "part": "plot",
+        "w": 576,
+        "h": 200,
+        "sizeW": "fill",
+        "sizeH": "fixed"
+      },
+      {
+        "type": "stack",
+        "name": "Labels",
+        "w": 200,
+        "h": 24,
+        "layout": {
+          "direction": "row",
+          "gap": 0,
+          "pad": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "justify": "space-between"
+        },
+        "sizeW": "fill",
+        "sizeH": "fit",
+        "children": [
+          {
+            "type": "text",
+            "name": "Label {n}",
+            "w": 48,
+            "h": 24,
+            "sizeW": "fit",
+            "text": "Jan",
+            "ink": "ink",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 400
+            },
+            "part": "tick"
+          },
+          {
+            "type": "text",
+            "name": "Label {n}",
+            "w": 48,
+            "h": 24,
+            "sizeW": "fit",
+            "text": "Feb",
+            "ink": "ink",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 400
+            },
+            "part": "tick"
+          },
+          {
+            "type": "text",
+            "name": "Label {n}",
+            "w": 48,
+            "h": 24,
+            "sizeW": "fit",
+            "text": "Mar",
+            "ink": "ink",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 400
+            },
+            "part": "tick"
+          },
+          {
+            "type": "text",
+            "name": "Label {n}",
+            "w": 48,
+            "h": 24,
+            "sizeW": "fit",
+            "text": "Apr",
+            "ink": "ink",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 400
+            },
+            "part": "tick"
+          },
+          {
+            "type": "text",
+            "name": "Label {n}",
+            "w": 48,
+            "h": 24,
+            "sizeW": "fit",
+            "text": "May",
+            "ink": "ink",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 400
+            },
+            "part": "tick"
+          },
+          {
+            "type": "text",
+            "name": "Label {n}",
+            "w": 48,
+            "h": 24,
+            "sizeW": "fit",
+            "text": "Jun",
+            "ink": "ink",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 400
+            },
+            "part": "tick"
+          },
+          {
+            "type": "text",
+            "name": "Label {n}",
+            "w": 48,
+            "h": 24,
+            "sizeW": "fit",
+            "text": "Jul",
+            "ink": "ink",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 400
+            },
+            "part": "tick"
+          },
+          {
+            "type": "text",
+            "name": "Label {n}",
+            "w": 48,
+            "h": 24,
+            "sizeW": "fit",
+            "text": "Aug",
+            "ink": "ink",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 400
+            },
+            "part": "tick"
+          },
+          {
+            "type": "text",
+            "name": "Label {n}",
+            "w": 48,
+            "h": 24,
+            "sizeW": "fit",
+            "text": "Sep",
+            "ink": "ink",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 400
+            },
+            "part": "tick"
+          },
+          {
+            "type": "text",
+            "name": "Label {n}",
+            "w": 48,
+            "h": 24,
+            "sizeW": "fit",
+            "text": "Oct",
+            "ink": "ink",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 400
+            },
+            "part": "tick"
+          },
+          {
+            "type": "text",
+            "name": "Label {n}",
+            "w": 48,
+            "h": 24,
+            "sizeW": "fit",
+            "text": "Nov",
+            "ink": "ink",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 400
+            },
+            "part": "tick"
+          },
+          {
+            "type": "text",
+            "name": "Label {n}",
+            "w": 48,
+            "h": 24,
+            "sizeW": "fit",
+            "text": "Dec",
+            "ink": "ink",
+            "typography": {
+              "role": "body",
+              "size": 15,
+              "weight": 400
+            },
+            "part": "tick"
+          }
+        ]
+      }
+    ]
+  }
+}

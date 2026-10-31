@@ -6,10 +6,10 @@
 // the parts each behaviour needs, the settings each one reads and their ranges,
 // and sizes a design can hold.
 
-import { FORMAT, type Block, type Field, type Kind, type Layer, type Part } from './types.js';
+import { FORMAT, type Block, type Column, type Field, type Kind, type Layer, type Part } from './types.js';
 
-export const KINDS: readonly Kind[] = ['carousel', 'accordion', 'notice', 'ring', 'showcase', 'mosaic', 'cylinder', 'form'];
-export const PARTS: readonly Part[] = ['track', 'prev', 'next', 'dots', 'pause', 'dismiss', 'picture', 'item', 'header', 'panel', 'icon', 'tile', 'counter', 'progress', 'field', 'label', 'input', 'submit', 'status'];
+export const KINDS: readonly Kind[] = ['carousel', 'accordion', 'notice', 'ring', 'showcase', 'mosaic', 'cylinder', 'form', 'table', 'chart'];
+export const PARTS: readonly Part[] = ['track', 'prev', 'next', 'dots', 'pause', 'dismiss', 'picture', 'item', 'header', 'panel', 'icon', 'tile', 'counter', 'progress', 'field', 'label', 'input', 'submit', 'status', 'head', 'column', 'body', 'row', 'cell', 'search', 'first', 'last', 'empty', 'plot', 'bar', 'tick', 'value', 'range'];
 const LAYER_TYPES = ['frame', 'stack', 'text', 'button', 'image', 'ellipse'];
 const COLOURS = ['accent', 'surface', 'field', 'edge', 'ink', 'on-accent', 'on-picture'];
 const SIZING = ['fixed', 'fit', 'fill'];
@@ -17,8 +17,15 @@ const SIZING = ['fixed', 'fit', 'fill'];
 // does not have is refused, never carried. Nothing in a Block runs, but a checker that let unknown fields through
 // would pass a Block whose `script` or `onclick` a reviewer then has to notice by eye
 const BLOCK_FIELDS = ['$schema', 'format', 'id', 'kind', 'label', 'hint', 'category', 'isNew', 'author', 'settings', 'root'];
-const LAYER_FIELDS = ['type', 'name', 'part', 'w', 'h', 'layout', 'sizeW', 'sizeH', 'float', 'clip', 'fill', 'stroke', 'ink', 'shade', 'radius', 'text', 'typography', 'hidden', 'repeat', 'children', 'raised', 'contain', 'field'];
+const LAYER_FIELDS = ['type', 'name', 'part', 'w', 'h', 'layout', 'sizeW', 'sizeH', 'float', 'clip', 'fill', 'stroke', 'ink', 'shade', 'radius', 'text', 'typography', 'hidden', 'repeat', 'children', 'raised', 'contain', 'field', 'column'];
 const FIELD_FIELDS = ['type', 'name', 'required', 'options'];
+const COLUMN_FIELDS = ['kind', 'sort', 'min', 'phone'];
+/** what a table's column may hold */
+export const COLUMN_KINDS: readonly Column['kind'][] = ['text', 'number', 'money', 'percent', 'date', 'status', 'person', 'link'];
+/** a status's tone: its badge's colour, by meaning */
+export const TONES = ['positive', 'negative', 'warning', 'info', 'neutral'] as const;
+/** a chart's data: rows of a label and values, separated by commas, the first row their names (chartData.ts) */
+export const DATA_MAX = 8000;
 /** what a form may ask for: nothing else, so a Block cannot be a page that collects passwords or cards */
 export const FIELD_TYPES: readonly Field['type'][] = ['text', 'email', 'tel', 'long', 'choice', 'checkbox'];
 /**
@@ -30,7 +37,7 @@ export const FORBIDDEN = /\bpass(word|wd|code|phrase)?\b|\bpwd\b|\bpin\b|\bcards
 export const asksForSecret = (words: string) => FORBIDDEN.test(words.replace(/[_\-.]+/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2'));
 /** a field's name: what its answer is sent under */
 export const FIELD_NAME = /^[a-z][a-z0-9_-]{0,39}$/;
-const LAYOUT_FIELDS = ['direction', 'gap', 'pad', 'align', 'justify'];
+const LAYOUT_FIELDS = ['direction', 'gap', 'pad', 'align', 'justify', 'wrap'];
 const FLOAT_FIELDS = ['left', 'right', 'top', 'bottom', 'centreX', 'centreY', 'cover'];
 const TYPE_FIELDS = ['role', 'size', 'weight', 'align'];
 
@@ -45,6 +52,8 @@ export const NEEDS: Record<Kind, Part[]> = {
   mosaic: ['tile'],
   cylinder: ['track'],
   form: ['field', 'input', 'submit', 'status'],
+  table: ['head', 'column', 'body', 'row', 'cell'],
+  chart: ['plot'],
 };
 
 type Range = { type: 'number'; min: number; max: number } | { type: 'boolean' } | { type: 'enum'; values: string[] } | { type: 'text'; max: number; pattern?: RegExp };
@@ -129,6 +138,40 @@ export const SETTINGS: Record<Kind, Record<string, Range>> = {
     failText: { type: 'text', max: 160 },
     // what a design tool's Preview acts out after the answers pass: a message sent, or one that failed
     preview: { type: 'enum', values: ['sent', 'failed'] },
+  },
+  // a table: the column it is sorted by at first (-1: as drawn) and which way, rows per page (0: all), the first column
+  // held in place while the table scrolls sideways on a narrow screen, every other row tinted, how tall its rows are,
+  // and each status's tone ("Paid:positive;Refunded:info")
+  table: {
+    sort: { type: 'number', min: -1, max: 11 },
+    dir: { type: 'enum', values: ['asc', 'desc'] },
+    pageSize: { type: 'number', min: 0, max: 100 },
+    pin: { type: 'boolean' },
+    stripes: { type: 'boolean' },
+    density: { type: 'enum', values: ['compact', 'comfortable'] },
+    tones: { type: 'text', max: 600, pattern: /^([^:;]{1,40}:(positive|negative|warning|info|neutral)(;|$))*$/ },
+    // the counter's words, {from}, {to} and {total} filled in as the reader pages and searches
+    count: { type: 'text', max: 120 },
+  },
+  // a chart: line, area or bars (stacked or side by side), drawn from `data`; smooth lines, points on them, values from
+  // zero, how numbers read (with a prefix such as $ and a suffix such as %), dashed grid lines, a legend when it has
+  // several series, how it draws in, which summary its value shows, and how many labels its axis keeps at most
+  chart: {
+    type: { type: 'enum', values: ['line', 'area', 'bar'] },
+    data: { type: 'text', max: DATA_MAX },
+    stacked: { type: 'boolean' },
+    smooth: { type: 'boolean' },
+    points: { type: 'boolean' },
+    zero: { type: 'boolean' },
+    format: { type: 'enum', values: ['number', 'compact', 'percent'] },
+    prefix: { type: 'text', max: 8 },
+    suffix: { type: 'text', max: 8 },
+    decimals: { type: 'number', min: 0, max: 4 },
+    grid: { type: 'boolean' },
+    legend: { type: 'boolean' },
+    draw: { type: 'enum', values: ['once', 'always', 'off'] },
+    value: { type: 'enum', values: ['sum', 'last', 'average', 'max', 'none'] },
+    ticks: { type: 'number', min: 2, max: 16 },
   },
 };
 
@@ -239,6 +282,17 @@ export function validateBlock(value: unknown): Verdict {
       }
     }
     if ((x.part === 'label' || x.part === 'input') && typeof x.text === 'string' && asksForSecret(x.text)) say(here, 'a form does not ask for passwords, cards or codes');
+    // a table's column: only on a header cell, of a kind a table knows
+    if (x.part === 'column' && x.column === undefined) say(here, 'a column says what it holds (column)');
+    if (x.column !== undefined) {
+      const c = x.column as Partial<Column>;
+      only(c, COLUMN_FIELDS, `${here} column`);
+      if (x.part !== 'column') say(here, 'column: only on a layer marked column');
+      if (!COLUMN_KINDS.includes(c.kind as Column['kind'])) say(here, `column: kind one of ${COLUMN_KINDS.join(', ')}`);
+      if (c.sort !== undefined && typeof c.sort !== 'boolean') say(here, 'column: sort true or false');
+      if (c.phone !== undefined && typeof c.phone !== 'boolean') say(here, 'column: phone true or false');
+      if (c.min !== undefined && !isNum(c.min, 40, 600)) say(here, 'column: min from 40 to 600 px');
+    }
     if (x.typography !== undefined) {
       const t = x.typography;
       if (!t || !['heading', 'body'].includes(t.role) || !isNum(t.size, 8, 200) || !isNum(t.weight, 100, 900)) say(here, 'typography: a role (heading or body), a size from 8 to 200, a weight from 100 to 900');
@@ -247,8 +301,10 @@ export function validateBlock(value: unknown): Verdict {
     if (x.layout !== undefined) {
       const lo = x.layout;
       if (!lo || !['row', 'column'].includes(lo.direction) || !isNum(lo.gap, 0, 1000) || !Array.isArray(lo.pad) || lo.pad.length !== 4 || !lo.pad.every((p) => isNum(p, 0, 1000))) say(here, 'layout: a direction (row or column), a gap, four paddings');
+      else if (lo.wrap !== undefined && (typeof lo.wrap !== 'boolean' || lo.direction !== 'row')) say(here, 'layout: wrap true or false, on a row');
       // spacing on the 4 pt scale, as a design coach checks it: a Block should pass the coach of the tool it lands in
-      else if ([lo.gap, ...lo.pad].some((v) => v % 4 !== 0)) say(here, `layout: gap and padding on the 4 pt scale (multiples of 4), not ${[lo.gap, ...lo.pad].filter((v) => v % 4 !== 0).join(', ')}`);
+      // a gap of 1 is a hairline between rows (a table's dividers drawn by the colour behind them), not spacing
+      else if ([lo.gap === 1 ? 0 : lo.gap, ...lo.pad].some((v) => v % 4 !== 0)) say(here, `layout: gap and padding on the 4 pt scale (multiples of 4, or a gap of 1 for a hairline), not ${[lo.gap === 1 ? 0 : lo.gap, ...lo.pad].filter((v) => v % 4 !== 0).join(', ')}`);
     }
     // auto layout throughout: a layer holding others lays them out; only one marked to float is placed by hand
     const kids = Array.isArray(x.children) ? x.children : [];

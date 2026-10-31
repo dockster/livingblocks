@@ -19,7 +19,8 @@
 export const FORMAT = 1;
 
 /** The behaviours there are; each is played by the runtime. */
-export type Kind = 'carousel' | 'accordion' | 'notice' | 'ring' | 'showcase' | 'mosaic' | 'cylinder' | 'form';
+/** `table` and `chart` are played by the dashboard add-on (livingblocks/dashboard), not the main runtime. */
+export type Kind = 'carousel' | 'accordion' | 'notice' | 'ring' | 'showcase' | 'mosaic' | 'cylinder' | 'form' | 'table' | 'chart';
 
 /**
  * The parts a behaviour needs, marked on its layers. A carousel: its track of
@@ -32,7 +33,14 @@ export type Kind = 'carousel' | 'accordion' | 'notice' | 'ring' | 'showcase' | '
  * A form: each field (its label and the box typed in, whose words are the
  * placeholder), the button that sends it, and where its messages show.
  */
-export type Part = 'track' | 'prev' | 'next' | 'dots' | 'pause' | 'dismiss' | 'picture' | 'item' | 'header' | 'panel' | 'icon' | 'tile' | 'counter' | 'progress' | 'field' | 'label' | 'input' | 'submit' | 'status';
+/**
+ * A table: its header row (head) and each header cell (column, with what its column holds), the rows' container
+ * (body), each row and cell; a search box (search, a box typed in like a form's input); pages (first, prev, next, last,
+ * and the counter whose words say where the reader is: "{from} to {to} of {total}"); what shows when no row matches
+ * (empty); a header cell's sort arrow (icon). A chart: the plot it is drawn in, each bar, each label along its axis
+ * (tick), and the words the design tool fills from its data: its value and its range.
+ */
+export type Part = 'track' | 'prev' | 'next' | 'dots' | 'pause' | 'dismiss' | 'picture' | 'item' | 'header' | 'panel' | 'icon' | 'tile' | 'counter' | 'progress' | 'field' | 'label' | 'input' | 'submit' | 'status' | 'head' | 'column' | 'body' | 'row' | 'cell' | 'search' | 'first' | 'last' | 'empty' | 'plot' | 'bar' | 'tick' | 'value' | 'range';
 
 /**
  * Colours by role, read from the design the Block lands in: its accent (the
@@ -70,6 +78,8 @@ export interface Layout {
   pad: [number, number, number, number];
   align?: 'start' | 'center' | 'end' | 'stretch';
   justify?: 'start' | 'center' | 'end' | 'space-between';
+  /** a row whose children go onto the next line when they do not fit (a table's footer on a phone) */
+  wrap?: boolean;
 }
 
 export type LayerType = 'frame' | 'stack' | 'text' | 'button' | 'image' | 'ellipse';
@@ -84,6 +94,18 @@ export interface Field {
   name?: string;
   required?: boolean;
   options?: string[];
+}
+
+/**
+ * A table's column, on its header cell (part `column`): what it holds, which decides how it sorts (numbers as numbers,
+ * dates as dates) and how it is drawn (a status as a badge, a person with a picture or initials); whether a press on
+ * its header sorts by it; the narrowest it gets before the table scrolls sideways (px); shown on phones or not.
+ */
+export interface Column {
+  kind: 'text' | 'number' | 'money' | 'percent' | 'date' | 'status' | 'person' | 'link';
+  sort?: boolean;
+  min?: number;
+  phone?: boolean;
 }
 
 export interface Layer {
@@ -119,6 +141,8 @@ export interface Layer {
   repeat?: number;
   /** a form's field: on the layer marked `field` */
   field?: Field;
+  /** a table's column: on the layer marked `column` */
+  column?: Column;
   children?: Layer[];
 }
 

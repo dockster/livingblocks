@@ -1,7 +1,7 @@
 {
   "name": "livingblocks",
-  "version": "0.6.0",
-  "description": "Working web components as data: carousels, accordions, rings, showcases, grids, text cylinders, notices and forms described as layer trees with roles and settings, and a small runtime that makes them work, with a keyboard and a screen reader. No dependencies, respects reduced motion.",
+  "version": "0.7.0",
+  "description": "Working web components as data: carousels, accordions, rings, showcases, grids, text cylinders, notices, forms, tables and charts described as layer trees with roles and settings, and a small runtime that makes them work, with a keyboard and a screen reader. No dependencies, respects reduced motion.",
   "type": "module",
   "main": "./dist/livingblocks.mjs",
   "module": "./dist/livingblocks.mjs",
@@ -18,6 +18,12 @@
     },
     "./global.min": {
       "default": "./dist/livingblocks.min.js"
+    },
+    "./dashboard": {
+      "default": "./dist/livingblocks.dashboard.js"
+    },
+    "./dashboard.min": {
+      "default": "./dist/livingblocks.dashboard.min.js"
     },
     "./schema": {
       "default": "./schema/block.schema.json"
@@ -39,7 +45,9 @@
   "sideEffects": [
     "./src/runtime.js",
     "./dist/livingblocks.js",
-    "./dist/livingblocks.min.js"
+    "./dist/livingblocks.min.js",
+    "./dist/livingblocks.dashboard.js",
+    "./dist/livingblocks.dashboard.min.js"
   ],
   "scripts": {
     "build": "node scripts/build.mjs",
@@ -60,6 +68,11 @@
     "text-cylinder",
     "form",
     "contact-form",
+    "table",
+    "data-table",
+    "chart",
+    "line-chart",
+    "bar-chart",
     "accessibility",
     "no-code",
     "design-to-code",
